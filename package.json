@@ -1,0 +1,80 @@
+{
+	"name": "@cldmv/prettier-plugin-jsonv",
+	"version": "1.0.0",
+	"description": "Prettier plugin for @cldmv/jsonv files",
+	"type": "module",
+	"main": "./dist/index.mjs",
+	"exports": {
+		".": {
+			"types": "./types/dist/index.d.mts",
+			"import": "./dist/index.mjs"
+		}
+	},
+	"scripts": {
+		"build": "npm run build:js && npm run build:types",
+		"build:js": "node scripts/build.mjs",
+		"build:types": "tsc -p .configs/tsconfig.types.jsonc",
+		"test": "vitest run --config .configs/vitest.config.mjs",
+		"test:watch": "vitest --config .configs/vitest.config.mjs"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist/**",
+		"types/dist/",
+		"README.md",
+		"LICENSE"
+	],
+	"peerDependencies": {
+		"@cldmv/jsonv": "^1.0.0",
+		"prettier": "^3.0.0"
+	},
+	"devDependencies": {
+		"@cldmv/jsonv": "^1.0.0",
+		"@types/prettier": "^2.7.3",
+		"esbuild": "^0.27.0",
+		"prettier": "^3.8.3",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.5"
+	},
+	"keywords": [
+		"prettier",
+		"jsonv",
+		"json5",
+		"formatter",
+		"code-style",
+		"formatting",
+		"es2015",
+		"es2020",
+		"es2021",
+		"bigint",
+		"numeric-separators"
+	],
+	"author": {
+		"name": "Shinrai",
+		"company": "CLDMV",
+		"email": "git+npm@cldmv.net",
+		"url": "https://cldmv.net"
+	},
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/CLDMV/jsonv-prettier-plugin-jsonv.git"
+	},
+	"bugs": {
+		"url": "https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/issues"
+	},
+	"homepage": "https://github.com/CLDMV/jsonv-prettier-plugin-jsonv#readme",
+	"funding": {
+		"type": "github",
+		"url": "https://github.com/sponsors/shinrai"
+	},
+	"contributors": [
+		{
+			"name": "CLDMV",
+			"url": "https://github.com/CLDMV"
+		}
+	],
+	"types": "./types/src/index.d.mts"
+}
