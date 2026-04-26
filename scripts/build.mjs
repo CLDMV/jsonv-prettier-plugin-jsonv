@@ -6,7 +6,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-04-25 21:13:26 -07:00 (1777176806)
+ *	@Last modified time: 2026-04-25 21:45:52 -07:00 (1777178752)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  */
@@ -22,6 +22,8 @@ await build({
 	outfile: resolve(root, "dist/index.mjs"),
 	bundle: false,
 	format: "esm",
+	// sourcemap: true,
+	sourcemap: false,
 	minifyWhitespace: true
 	// legalComments: "none",
 	// banner: "/*! For licenses information, see LICENSE */"

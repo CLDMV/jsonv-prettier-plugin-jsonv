@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.mts","sourceRoot":"","sources":["../../src/index.mjs"],"names":[],"mappings":";AA4KA,wCAAwC;AACxC,sBADW,OAAO,UAAU,EAAE,MAAM,CAiIlC"}
+{"version":3,"file":"index.d.mts","sourceRoot":"","sources":["../../src/index.mjs"],"names":[],"mappings":";qBA6Ka,OAAO,UAAU,EAAE,MAAM;4BACzB,OAAO,UAAU,EAAE,aAAa;sBAChC,OAAO,UAAU,EAAE,OAAO;kBAC1B,OAAO,UAAU,EAAE,GAAG;AAJnC;;;;;GAKG;AAEH,qBAAqB;AACrB,sBADW,MAAM,CAiIf"}

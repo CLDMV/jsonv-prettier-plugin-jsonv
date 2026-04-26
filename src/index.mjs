@@ -170,7 +170,14 @@ function printNode(path, options, print) {
 	}
 }
 
-/** @type {import('prettier').Plugin} */
+/**
+ * @typedef {import('prettier').Plugin} Plugin
+ * @typedef {import('prettier').ParserOptions} ParserOptions
+ * @typedef {import('prettier').AstPath} AstPath
+ * @typedef {import('prettier').Doc} Doc
+ */
+
+/** @type {Plugin} */
 const plugin = {
 	languages: [
 		{
@@ -185,7 +192,7 @@ const plugin = {
 		jsonv: {
 			/**
 			 * @param {string} text
-			 * @param {import('prettier').ParserOptions} options
+			 * @param {ParserOptions} options
 			 * @returns {object}
 			 */
 			parse(text, options) {

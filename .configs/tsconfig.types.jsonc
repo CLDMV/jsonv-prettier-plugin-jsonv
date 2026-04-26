@@ -6,7 +6,7 @@
  * @Email: <Shinrai@users.noreply.github.com>
  * -----
  * @Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- * @Last modified time: 2026-04-25 21:17:49 -07:00 (1777177069)
+ * @Last modified time: 2026-04-25 21:38:34 -07:00 (1777178314)
  * -----
  * @Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  */
@@ -38,7 +38,7 @@
 		"../.config",
 		"../.configs",
 		"../.data",
-		// "../dist",
+		"../dist",
 		"../scripts",
 		"../build",
 		"../docs",

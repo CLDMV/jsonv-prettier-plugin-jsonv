@@ -1,7 +1,8 @@
 # @cldmv/prettier-plugin-jsonv
 
-[![npm version](https://img.shields.io/npm/v/@cldmv/prettier-plugin-jsonv)](https://www.npmjs.com/package/@cldmv/prettier-plugin-jsonv)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version]][npm_version_url] [![npm downloads]][npm_downloads_url] [![GitHub downloads]][github_downloads_url] [![Last commit]][last_commit_url] [![npm last update]][npm_last_update_url]
+
+[![Contributors]][contributors_url] [![Sponsor shinrai]][sponsor_url]
 
 A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
@@ -68,4 +69,25 @@ module.exports = {
 
 ## License
 
-MIT
+[![GitHub license]][github_license_url] [![npm license]][npm_license_url]
+
+Apache-2.0 © Shinrai / CLDMV
+
+[npm version]: https://img.shields.io/npm/v/%40cldmv%2Fprettier-plugin-jsonv.svg?style=for-the-badge&logo=npm&logoColor=white&labelColor=CB3837
+[npm_version_url]: https://www.npmjs.com/package/@cldmv/prettier-plugin-jsonv
+[npm downloads]: https://img.shields.io/npm/dm/%40cldmv%2Fprettier-plugin-jsonv.svg?style=for-the-badge&logo=npm&logoColor=white&labelColor=CB3837
+[npm_downloads_url]: https://www.npmjs.com/package/@cldmv/prettier-plugin-jsonv
+[npm last update]: https://img.shields.io/npm/last-update/%40cldmv%2Fprettier-plugin-jsonv?style=for-the-badge&logo=npm&logoColor=white&labelColor=CB3837
+[npm_last_update_url]: https://www.npmjs.com/package/@cldmv/prettier-plugin-jsonv
+[npm license]: https://img.shields.io/npm/l/%40cldmv%2Fprettier-plugin-jsonv.svg?style=for-the-badge&logo=npm&logoColor=white&labelColor=CB3837
+[npm_license_url]: https://www.npmjs.com/package/@cldmv/prettier-plugin-jsonv
+[github downloads]: https://img.shields.io/github/downloads/CLDMV/jsonv-prettier-plugin-jsonv/total?style=for-the-badge&logo=github&logoColor=white&labelColor=181717
+[github_downloads_url]: https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/releases
+[last commit]: https://img.shields.io/github/last-commit/CLDMV/jsonv-prettier-plugin-jsonv?style=for-the-badge&logo=github&logoColor=white&labelColor=181717
+[last_commit_url]: https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/commits
+[github license]: https://img.shields.io/github/license/CLDMV/jsonv-prettier-plugin-jsonv.svg?style=for-the-badge&logo=github&logoColor=white&labelColor=181717
+[github_license_url]: https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/HEAD/LICENSE
+[contributors]: https://img.shields.io/github/contributors/CLDMV/jsonv-prettier-plugin-jsonv.svg?style=for-the-badge&logo=github&logoColor=white&labelColor=181717
+[contributors_url]: https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/graphs/contributors
+[sponsor shinrai]: https://img.shields.io/github/sponsors/shinrai?style=for-the-badge&logo=githubsponsors&logoColor=white&labelColor=EA4AAA&label=Sponsor
+[sponsor_url]: https://github.com/sponsors/shinrai

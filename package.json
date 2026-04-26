@@ -1,6 +1,6 @@
 {
 	"name": "@cldmv/prettier-plugin-jsonv",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Prettier plugin for @cldmv/jsonv files",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -11,9 +11,10 @@
 		}
 	},
 	"scripts": {
-		"build": "npm run build:js && npm run build:types",
+		"build": "npm run build:js && npm run build:types && npm run fix-types",
 		"build:js": "node scripts/build.mjs",
 		"build:types": "tsc -p .configs/tsconfig.types.jsonc",
+		"fix-types": "node scripts/fix-types.mjs",
 		"test": "vitest run --config .configs/vitest.config.mjs",
 		"test:watch": "vitest --config .configs/vitest.config.mjs"
 	},
