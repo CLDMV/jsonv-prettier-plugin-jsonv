@@ -10,13 +10,19 @@
 			"import": "./dist/index.mjs"
 		}
 	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
 	"scripts": {
 		"build": "npm run build:js && npm run build:types && npm run fix-types",
+		"build:ci": "npm run build",
 		"build:js": "node scripts/build.mjs",
 		"build:types": "tsc -p .configs/tsconfig.types.jsonc",
 		"fix-types": "node scripts/fix-types.mjs",
-		"test": "vitest run --config .configs/vitest.config.mjs",
-		"test:watch": "vitest --config .configs/vitest.config.mjs"
+		"test": "node tests/run-vitest.mjs",
+		"test:watch": "vitest --config .configs/vitest.config.mjs",
+		"coverage": "node tests/run-vitest.mjs --coverage-quiet",
+		"ci:coverage": "npm run coverage"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -33,11 +39,13 @@
 	},
 	"devDependencies": {
 		"@cldmv/jsonv": "^1.0.0",
+		"@cldmv/vitest-runner": "^1.2.0",
 		"@types/prettier": "^2.7.3",
+		"@vitest/coverage-v8": "^4.1.10",
 		"esbuild": "^0.27.0",
 		"prettier": "^3.8.3",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.5"
+		"vitest": "^4.1.10"
 	},
 	"keywords": [
 		"prettier",
