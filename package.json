@@ -1,6 +1,6 @@
 {
 	"name": "@cldmv/prettier-plugin-jsonv",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Prettier plugin for @cldmv/jsonv files",
 	"type": "module",
 	"main": "./dist/index.mjs",
