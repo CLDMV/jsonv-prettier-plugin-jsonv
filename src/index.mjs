@@ -13,100 +13,222 @@
 
 /*! For licenses information, see LICENSE */
 
-import { Parser } from "@cldmv/jsonv/parser";
-import { doc } from "prettier";
+import { parseToAst } from "@cldmv/jsonv/parser";
+import { doc, util } from "prettier";
 
 const { hardline, indent, join } = doc.builders;
 
 /**
- * @internal
- * @param {string} key
- * @returns {boolean}
+ * Printing is lossless: every literal, key and identifier is printed from its
+ * source text, never from its evaluated value, and every comment is attached
+ * through prettier's comment API so it is printed exactly once, in order.
+ * Only layout (indentation, line breaks, blank-line runs, spacing inside
+ * template interpolations) is normalized, plus the unquoting of quoted keys
+ * whose content is a plain identifier.
  */
-function isValidIdentifier(key) {
-	return typeof key === "string" && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
+
+/**
+ * Child keys of each node type, in source order. Template quasis are left out:
+ * they carry no comments and are printed from the source text.
+ * @internal
+ * @type {Record<string, string[]>}
+ */
+const VISITOR_KEYS = {
+	Program: ["body"],
+	ObjectExpression: ["properties"],
+	Property: ["key", "value"],
+	ArrayExpression: ["elements"],
+	MemberExpression: ["object", "property"],
+	TemplateLiteral: ["expressions"],
+	Literal: [],
+	Identifier: []
+};
+
+/**
+ * Node types whose entries are separated by commas.
+ * @internal
+ */
+const CONTAINERS = new Set(["ObjectExpression", "ArrayExpression"]);
+
+/**
+ * Characters that end a line comment (ECMAScript line terminators).
+ * @internal
+ */
+const LINE_TERMINATOR = /[\n\r\u2028\u2029]/g;
+
+/**
+ * A quoted key may be printed unquoted when it is written without escapes and
+ * its content is an identifier the jsonv lexer reads back as the same key.
+ * @internal
+ */
+const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+/**
+ * @internal
+ * @param {{ loc: { start: { offset: number } } }} node
+ * @returns {number}
+ */
+function locStart(node) {
+	return node.loc.start.offset;
 }
 
 /**
  * @internal
- * @param {string} str
- * @param {'"' | "'"} quote
+ * @param {{ loc: { end: { offset: number } } }} node
+ * @returns {number}
+ */
+function locEnd(node) {
+	return node.loc.end.offset;
+}
+
+/**
+ * Print a property key from its source form. A quoted key whose content is a
+ * plain identifier with no escapes is unquoted (`"host"` -> `host`); this
+ * keeps the key identical because jsonv evaluates both to the same string.
+ * Everything else (other quoted keys, numeric and BigInt keys) is printed
+ * exactly as written.
+ * @internal
+ * @param {{ value: unknown, raw: string }} node - A `Literal` key node.
  * @returns {string}
  */
-function escapeString(str, quote) {
-	let result = "";
-	for (let i = 0; i < str.length; i++) {
-		const char = str[i];
-		const code = str.charCodeAt(i);
-		switch (char) {
-			case "\\":
-				result += "\\\\";
-				break;
-			case "\b":
-				result += "\\b";
-				break;
-			case "\f":
-				result += "\\f";
-				break;
-			case "\n":
-				result += "\\n";
-				break;
-			case "\r":
-				result += "\\r";
-				break;
-			case "\t":
-				result += "\\t";
-				break;
-			case '"':
-				result += quote === '"' ? '\\"' : '"';
-				break;
-			case "'":
-				result += quote === "'" ? "\\'" : "'";
-				break;
-			default:
-				if (code < 0x20 || code === 0x7f) {
-					result += "\\u" + code.toString(16).padStart(4, "0");
-				} else {
-					result += char;
-				}
-		}
-	}
-	return result;
-}
-
-/**
- * @internal
- * @param {string} key
- * @param {import('prettier').ParserOptions} options
- * @returns {string}
- */
-function printKey(key, options) {
-	if (isValidIdentifier(key)) return key;
-	const quote = options.singleQuote ? "'" : '"';
-	return `${quote}${escapeString(String(key), quote)}${quote}`;
-}
-
-/**
- * @internal
- * @param {{ value: unknown, raw?: string }} node
- * @param {import('prettier').ParserOptions} options
- * @returns {import('prettier').Doc}
- */
-function printLiteralNode(node, options) {
+function printLiteralKey(node) {
 	const { value, raw } = node;
-	if (value === null) return "null";
-	if (typeof value === "boolean") return String(value);
-	if (typeof value === "bigint") return `${value}n`;
-	if (typeof value === "number") {
-		if (Number.isNaN(value)) return "NaN";
-		if (!Number.isFinite(value)) return value > 0 ? "Infinity" : "-Infinity";
-		return String(value);
-	}
-	if (typeof value === "string") {
-		const quote = options.singleQuote ? "'" : '"';
-		return `${quote}${escapeString(value, quote)}${quote}`;
+	const quoted = raw[0] === '"' || raw[0] === "'";
+	if (quoted && raw.slice(1, -1) === value && IDENTIFIER.test(value)) {
+		return value;
 	}
 	return raw;
+}
+
+/**
+ * Return the index of the `${` or closing backtick that ends the template
+ * text starting at `pos`, skipping escape sequences.
+ * @internal
+ * @param {string} text
+ * @param {number} pos
+ * @returns {number}
+ */
+function findTemplateTextEnd(text, pos) {
+	while (pos < text.length && text[pos] !== "`" && !(text[pos] === "$" && text[pos + 1] === "{")) {
+		pos += text[pos] === "\\" ? 2 : 1;
+	}
+	return pos;
+}
+
+/**
+ * Return the index of the `}` that closes a template interpolation, starting
+ * from the end of its expression and skipping whitespace and comments.
+ * @internal
+ * @param {string} text
+ * @param {number} pos
+ * @returns {number}
+ */
+function findInterpolationEnd(text, pos) {
+	while (pos < text.length && text[pos] !== "}") {
+		if (text.startsWith("//", pos)) {
+			// A line comment inside an interpolation always ends before its `}`.
+			LINE_TERMINATOR.lastIndex = pos;
+			pos = LINE_TERMINATOR.exec(text).index;
+		} else if (text.startsWith("/*", pos)) {
+			pos = text.indexOf("*/", pos + 2) + 2;
+		} else {
+			pos++;
+		}
+	}
+	return pos;
+}
+
+/**
+ * Print the comments of the current node that are neither leading nor
+ * trailing (and match `filter`), joined by hard line breaks.
+ * @internal
+ * @param {import('prettier').AstPath} path
+ * @param {import('prettier').ParserOptions} options
+ * @param {(comment: any) => boolean} [filter]
+ * @returns {import('prettier').Doc[]}
+ */
+function printDanglingComments(path, options, filter = () => true) {
+	const parts = [];
+	if (!path.node.comments) return parts;
+	path.each((commentPath) => {
+		const comment = commentPath.node;
+		if (comment.leading || comment.trailing || !filter(comment)) return;
+		comment.printed = true;
+		parts.push(options.printer.printComment(commentPath, options));
+	}, "comments");
+	return parts;
+}
+
+/**
+ * Print an object or array: one entry per line, no trailing comma, and at
+ * most one blank line kept between entries where the source had one.
+ * @internal
+ * @param {import('prettier').AstPath} path
+ * @param {import('prettier').ParserOptions} options
+ * @param {Function} print
+ * @param {"properties" | "elements"} key
+ * @param {string} open
+ * @param {string} close
+ * @returns {import('prettier').Doc}
+ */
+function printContainer(path, options, print, key, open, close) {
+	const entries = path.node[key];
+	if (entries.length === 0) {
+		const dangling = printDanglingComments(path, options);
+		if (dangling.length === 0) {
+			return open === "{" && options.bracketSpacing ? "{ }" : open + close;
+		}
+		return [open, indent([hardline, join(hardline, dangling)]), hardline, close];
+	}
+
+	// Comments written after an entry's comma, on the same line (see handleEndOfLineComment).
+	const afterComma = entries.map((entry) => printDanglingComments(path, options, (comment) => comment.marker === entry));
+	const parts = [];
+	path.each((entryPath, index) => {
+		parts.push(print());
+		const isLast = index === entries.length - 1;
+		if (!isLast) parts.push(",");
+		for (const comment of afterComma[index]) {
+			parts.push(" ", comment);
+		}
+		if (!isLast) {
+			parts.push(hardline);
+			if (util.isNextLineEmpty(options.originalText, locEnd(entryPath.node))) {
+				parts.push(hardline);
+			}
+		}
+	}, key);
+	return [open, indent([hardline, ...parts]), hardline, close];
+}
+
+/**
+ * Print a template literal with interpolations. The text between the
+ * delimiters is sliced from the source (so escapes and line breaks are kept
+ * verbatim) and the backticks, `${` and `}` are printed explicitly; the
+ * quasis' own `raw` spans are not relied on.
+ * @internal
+ * @param {import('prettier').AstPath} path
+ * @param {import('prettier').ParserOptions} options
+ * @param {Function} print
+ * @returns {import('prettier').Doc}
+ */
+function printTemplateLiteral(path, options, print) {
+	const { node } = path;
+	const text = options.originalText;
+	const parts = ["`"];
+	let pos = locStart(node) + 1;
+	node.expressions.forEach((expression, index) => {
+		const textEnd = findTemplateTextEnd(text, pos);
+		const comments = printDanglingComments(path, options, (comment) => comment.marker === expression);
+		parts.push(text.slice(pos, textEnd), "${", path.call(print, "expressions", index));
+		for (const comment of comments) {
+			parts.push(" ", comment, hardline);
+		}
+		parts.push("}");
+		pos = findInterpolationEnd(text, locEnd(expression)) + 1;
+	});
+	parts.push(text.slice(pos, findTemplateTextEnd(text, pos)), "`");
+	return parts;
 }
 
 /**
@@ -117,57 +239,92 @@ function printLiteralNode(node, options) {
  * @returns {import('prettier').Doc}
  */
 function printNode(path, options, print) {
-	const node = path.getValue();
-	if (!node) return "";
+	const { node } = path;
 
 	switch (node.type) {
 		case "Program":
 			return [path.call(print, "body"), hardline];
 
-		case "ObjectExpression": {
-			const { properties } = node;
-			if (properties.length === 0) {
-				return options.bracketSpacing ? "{ }" : "{}";
-			}
-			return ["{", indent([hardline, join([",", hardline], path.map(print, "properties"))]), hardline, "}"];
-		}
+		case "ObjectExpression":
+			return printContainer(path, options, print, "properties", "{", "}");
 
-		case "Property": {
-			const rawKey = node.key;
-			const key = typeof rawKey === "string" ? rawKey : String(rawKey?.value ?? rawKey);
-			return [printKey(key, options), ": ", path.call(print, "value")];
-		}
+		case "ArrayExpression":
+			return printContainer(path, options, print, "elements", "[", "]");
 
-		case "ArrayExpression": {
-			const { elements } = node;
-			if (elements.length === 0) return "[]";
-			return ["[", indent([hardline, join([",", hardline], path.map(print, "elements"))]), hardline, "]"];
-		}
+		case "Property":
+			return [path.call(print, "key"), ": ", path.call(print, "value")];
 
 		case "Literal":
-			return printLiteralNode(node, options);
+			return path.key === "key" ? printLiteralKey(node) : node.raw;
 
 		case "Identifier":
 			return node.name;
 
 		case "MemberExpression":
-			return [path.call(print, "object"), ".", node.property.name];
+			return [path.call(print, "object"), ".", path.call(print, "property")];
 
-		case "TemplateLiteral": {
-			const { quasis, expressions } = node;
-			const parts = [];
-			for (let i = 0; i < quasis.length; i++) {
-				parts.push(quasis[i].value.raw);
-				if (i < expressions.length) {
-					parts.push(path.call(print, "expressions", i), "}");
-				}
-			}
-			return parts;
-		}
+		case "TemplateLiteral":
+			return printTemplateLiteral(path, options, print);
 
 		default:
 			throw new Error(`Unknown jsonv AST node type: ${node.type}`);
 	}
+}
+
+/**
+ * Place a line comment that sits inside a construct printed on one line
+ * (between a key and its value, inside a member access, or inside a template
+ * interpolation), where prettier's default placement would move it to the end
+ * of the output line and merge it with any other line comment there.
+ * @internal
+ * @param {any} comment
+ * @returns {boolean} `true` when the comment was attached here.
+ */
+function handleLineComment(comment, text) {
+	const { enclosingNode, precedingNode, followingNode } = comment;
+	if (comment.type !== "Line" || !enclosingNode) return false;
+
+	switch (enclosingNode.type) {
+		case "Property":
+		case "MemberExpression":
+			// `key // c` + newline + `: value` -> `key: // c` + newline + `value`
+			util.addLeadingComment(followingNode, comment);
+			return true;
+
+		case "TemplateLiteral":
+			if (precedingNode && locStart(comment) < findInterpolationEnd(text, locEnd(precedingNode))) {
+				// After an expression, inside its interpolation: printed there.
+				util.addDanglingComment(enclosingNode, comment, precedingNode);
+			} else {
+				// Before the expression of a later interpolation.
+				util.addLeadingComment(followingNode, comment);
+			}
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+/**
+ * Keep a block comment that ends a line after an object/array entry's comma
+ * (`a: 1, /* note *\/`) after the comma, instead of prettier's default of
+ * moving it in front of the comma. Line comments already print there.
+ * @internal
+ * @param {any} comment
+ * @param {string} text
+ * @returns {boolean} `true` when the comment was attached here.
+ */
+function handleEndOfLineComment(comment, text) {
+	const { enclosingNode, precedingNode } = comment;
+	if (comment.type === "Block" && precedingNode && CONTAINERS.has(enclosingNode?.type)) {
+		const commaIndex = util.getNextNonSpaceNonCommentCharacterIndex(text, locEnd(precedingNode));
+		if (text[commaIndex] === "," && commaIndex < locStart(comment)) {
+			util.addDanglingComment(enclosingNode, comment, precedingNode);
+			return true;
+		}
+	}
+	return handleLineComment(comment, text);
 }
 
 /**
@@ -191,68 +348,31 @@ const plugin = {
 	parsers: {
 		jsonv: {
 			/**
+			 * Parse with `@cldmv/jsonv`'s positioned AST: every node carries `loc`
+			 * offsets, literals carry `raw`, and all comments are returned.
 			 * @param {string} text
 			 * @param {ParserOptions} options
 			 * @returns {object}
 			 */
 			parse(text, options) {
-				const parser = new Parser(text, {
-					year: options?.jsonvYear ?? 2025,
-					strictBigInt: options?.strictBigInt ?? false,
-					mode: "jsonv",
-					preserveComments: true,
-					tolerant: false
+				const { program, comments, errors } = parseToAst(text, {
+					year: options.jsonvYear,
+					strictBigInt: options.strictBigInt,
+					mode: "jsonv"
 				});
 
-				const result = parser.parse();
-
-				if (result.errors?.length > 0) {
-					const err = result.errors[0];
+				if (errors.length > 0) {
+					const err = errors[0];
 					throw new SyntaxError(`${err.message} at line ${err.loc.start.line}, column ${err.loc.start.column}`);
 				}
 
-				const { program } = result;
-
-				// The parser discards comments during skipComments(), but the token stream
-				// (parser.tokens) retains them. Extract and attach them for prettier's
-				// comment attachment system.
-				const comments = parser.tokens
-					.filter((t) => t.type === "LineComment" || t.type === "BlockComment")
-					.map((t) => ({
-						type: t.type === "LineComment" ? "Line" : "Block",
-						value: String(t.value),
-						loc: t.loc
-					}));
-
-				if (comments.length > 0) {
-					program.comments = comments;
-				}
-
-				program.loc = {
-					start: { line: 1, column: 0, offset: 0 },
-					end: program.body?.loc?.end ?? { line: 1, column: 0, offset: text.length }
-				};
-
+				program.comments = comments;
 				return program;
 			},
 
 			astFormat: "jsonv",
-
-			/**
-			 * @param {object} node
-			 * @returns {number}
-			 */
-			locStart(node) {
-				return node.loc?.start?.offset ?? 0;
-			},
-
-			/**
-			 * @param {object} node
-			 * @returns {number}
-			 */
-			locEnd(node) {
-				return node.loc?.end?.offset ?? 0;
-			}
+			locStart,
+			locEnd
 		}
 	},
 
@@ -261,17 +381,29 @@ const plugin = {
 			print: printNode,
 
 			/**
+			 * @param {object} node
+			 * @returns {string[]}
+			 */
+			getVisitorKeys(node) {
+				return VISITOR_KEYS[node.type];
+			},
+
+			/**
+			 * Print a comment from its source text. A line comment gets a space
+			 * after `//` when it starts with a letter or digit (`//note` ->
+			 * `// note`); its text is otherwise kept as written, minus trailing
+			 * whitespace. Block comments are printed verbatim.
 			 * @param {import('prettier').AstPath} commentPath
 			 * @param {import('prettier').ParserOptions} options
 			 * @returns {import('prettier').Doc}
 			 */
 			printComment(commentPath, options) {
-				const comment = commentPath.getValue();
+				const comment = commentPath.node;
 				if (comment.type === "Line") {
-					const text = comment.value.trim();
-					return text ? `// ${text}` : "//";
+					const text = comment.value.trimEnd();
+					return /^[\p{L}\p{N}]/u.test(text) ? `// ${text}` : `//${text}`;
 				}
-				return `/*${comment.value}*/`;
+				return options.originalText.slice(locStart(comment), locEnd(comment));
 			},
 
 			/**
@@ -279,7 +411,7 @@ const plugin = {
 			 * @returns {boolean}
 			 */
 			canAttachComment(node) {
-				return !!node.type && node.type !== "TemplateElement";
+				return Boolean(node.type);
 			},
 
 			/**
@@ -288,6 +420,12 @@ const plugin = {
 			 */
 			isBlockComment(node) {
 				return node.type === "Block";
+			},
+
+			handleComments: {
+				ownLine: handleLineComment,
+				endOfLine: handleEndOfLineComment,
+				remaining: handleLineComment
 			}
 		}
 	},

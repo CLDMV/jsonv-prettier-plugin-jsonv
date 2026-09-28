@@ -1,0 +1,21 @@
+{
+	plain: 1, $dollar: 2, _under: 3, camelCase9: 4,
+	true: 5, false: 6, null: 7, Infinity: 8, NaN: 9,
+	"quoted": 10,
+	'single': 11,
+	"has space": 12,
+	'has space too': 13,
+	"with-dash": 14,
+	"a\u0062": 15,
+	'it\'s': 16,
+	"1abc": 17,
+	"": 18,
+	"true": 19,
+	3: 20,
+	0x10: 21,
+	7n: 22,
+	1.5: 23,
+	-1: 24,
+	1_000: 25,
+	"say \"hi\"": 26
+}
