@@ -1,3 +1,5 @@
+/** @type {JsonvPlugin} */
+export const plugin: JsonvPlugin;
 export default plugin;
 /**
  * An ES year `@cldmv/jsonv` can target.
@@ -126,8 +128,6 @@ export type JsonvPlugin = {
         strictBigInt: BooleanSupportOption;
     };
 };
-/** @type {JsonvPlugin} */
-declare const plugin: JsonvPlugin;
 import type { ParseOptions } from "@cldmv/jsonv";
 import type { Comment } from "@cldmv/jsonv";
 import type { Program } from "@cldmv/jsonv";

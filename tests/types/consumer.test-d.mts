@@ -7,7 +7,7 @@
  */
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Parser, Plugin, Printer, SupportOption } from "prettier";
-import plugin from "@cldmv/prettier-plugin-jsonv";
+import plugin, { plugin as namedPlugin } from "@cldmv/prettier-plugin-jsonv";
 import type {
 	JsonvComment,
 	JsonvNode,
@@ -21,6 +21,8 @@ import type {
 // The plugin is a prettier plugin, with no casts.
 plugin satisfies Plugin;
 plugin satisfies JsonvPlugin;
+// The same object is also exported by name.
+namedPlugin satisfies JsonvPlugin;
 const asPlugin: Plugin<JsonvNode> = plugin;
 const asPlugins: Options["plugins"] = [plugin];
 void [asPlugin, asPlugins];

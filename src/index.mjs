@@ -484,7 +484,7 @@ function printComment(commentPath, options) {
 }
 
 /** @type {JsonvPlugin} */
-const plugin = {
+export const plugin = {
 	languages: [
 		{
 			name: "jsonv",
