@@ -45,19 +45,19 @@ Add the plugin to your Prettier configuration:
 ### Using `.prettierrc.mjs` or `prettier.config.mjs`:
 
 ```javascript
-import jsonv from 'prettier-plugin-jsonv';
+import jsonv from "prettier-plugin-jsonv";
 
 export default {
-  plugins: [jsonv],
-  overrides: [
-    {
-      files: "*.jsonv",
-      options: {
-        jsonvYear: 2025,
-        strictBigInt: false
-      }
-    }
-  ]
+	plugins: [jsonv],
+	overrides: [
+		{
+			files: "*.jsonv",
+			options: {
+				jsonvYear: 2025,
+				strictBigInt: false
+			}
+		}
+	]
 };
 ```
 
@@ -65,25 +65,25 @@ export default {
 
 ```javascript
 module.exports = {
-  plugins: ['prettier-plugin-jsonv'],
-  overrides: [
-    {
-      files: "*.jsonv",
-      options: {
-        jsonvYear: 2025,
-        strictBigInt: false
-      }
-    }
-  ]
+	plugins: ["prettier-plugin-jsonv"],
+	overrides: [
+		{
+			files: "*.jsonv",
+			options: {
+				jsonvYear: 2025,
+				strictBigInt: false
+			}
+		}
+	]
 };
 ```
 
 ## Configuration Options
 
-| Option          | Type   | Default | Description                               |
-|----------------|--------|---------|-----------------------------------------|
-| `jsonvYear`    | number | 2025    | The year to use for JSONV features (2015-2025) |
-| `strictBigInt`   | boolean| false   | Whether to enforce strict BigInt parsing     |
+| Option         | Type    | Default | Description                                    |
+| -------------- | ------- | ------- | ---------------------------------------------- |
+| `jsonvYear`    | number  | 2025    | The year to use for JSONV features (2015-2025) |
+| `strictBigInt` | boolean | false   | Whether to enforce strict BigInt parsing       |
 
 ### Trailing commas
 

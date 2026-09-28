@@ -64,7 +64,9 @@ describe("the trailingComma option", () => {
 		});
 
 		it("never adds one to an empty container, even one holding comments", async () => {
-			const want = expected(["{", "\ta: { },", "\tb: [],", "\tc: {", "\t\t/* block */", "\t},", "\td: [", "\t\t// line", "\t],?", "}"])[trailingComma];
+			const want = expected(["{", "\ta: { },", "\tb: [],", "\tc: {", "\t\t/* block */", "\t},", "\td: [", "\t\t// line", "\t],?", "}"])[
+				trailingComma
+			];
 			expect(await formatChecked("{ a: {}, b: [ ], c: { /* block */ }, d: [ // line\n ] }", trailingComma)).toBe(want);
 			expect(await formatChecked("[]", trailingComma)).toBe("[]\n");
 			expect(await formatChecked("{}", trailingComma)).toBe("{ }\n");
@@ -98,9 +100,17 @@ describe("comments around the last entry", () => {
 			["a block comment before the closing bracket, no comma", "[1 /* c */ ]", ["[", "\t1 /* c */,?", "]"]],
 			["a line comment on its own line after the last entry", "{\n\ta: 1\n\t// c\n}", ["{", "\ta: 1,?", "\t// c", "}"]],
 			["a block comment on its own line after the last entry", "{\n\ta: 1,\n\t/* c */\n}", ["{", "\ta: 1,?", "\t/* c */", "}"]],
-			["own-line comments after a commented last entry", "[\n1, // one\n// two\n/* three */\n]", ["[", "\t1,? // one", "\t// two", "\t/* three */", "]"]],
+			[
+				"own-line comments after a commented last entry",
+				"[\n1, // one\n// two\n/* three */\n]",
+				["[", "\t1,? // one", "\t// two", "\t/* three */", "]"]
+			],
 			["a comment on the closing bracket's line", "{\n\ta: 1\n} // c", ["{", "\ta: 1,?", "} // c"]],
-			["comments in a nested last entry", "{ a: [ 1 // one\n ], /* after a */ }", ["{", "\ta: [", "\t\t1,? // one", "\t],? /* after a */", "}"]]
+			[
+				"comments in a nested last entry",
+				"{ a: [ 1 // one\n ], /* after a */ }",
+				["{", "\ta: [", "\t\t1,? // one", "\t],? /* after a */", "}"]
+			]
 		])("%s", async (_label, input, lines) => {
 			expect(await formatChecked(input, trailingComma)).toBe(expected(lines)[trailingComma]);
 		});
