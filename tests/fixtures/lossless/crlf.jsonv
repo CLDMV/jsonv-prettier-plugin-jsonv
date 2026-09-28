@@ -1,0 +1,6 @@
+{
+	// crlf comment
+	a: "x",
+	b: `line
+next`
+}

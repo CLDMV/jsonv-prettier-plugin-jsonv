@@ -14,36 +14,21 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
-		"checkJs": false,
+		// Type-check the JSDoc, not just emit declarations from it: a type error
+		// fails `build:types` (and so `build`, `test:types` and `build:ci`).
+		"checkJs": true,
+		"strict": true,
 		"declaration": true,
 		"emitDeclarationOnly": true,
 		"declarationMap": true,
 		"rootDir": "..",
 		"outDir": ".././types",
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"target": "ES2022",
 		"skipLibCheck": true,
-		"stripInternal": true
+		"stripInternal": true,
+		"types": []
 	},
-	"include": ["../**/*.js", "../**/*.mjs", "../**/*.d.ts"],
-	"exclude": [
-		"../api_tests",
-		"../api_test",
-		"../tests",
-		"../tools",
-		"../coverage",
-		"../tmp",
-		"../types",
-		"../.config",
-		"../.configs",
-		"../.data",
-		"../dist",
-		"../scripts",
-		"../build",
-		"../docs",
-		"../node_modules",
-		"../**/* copy.mjs",
-		"../**/* copy*.mjs"
-	]
+	"include": ["../src/**/*.mjs"]
 }

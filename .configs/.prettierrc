@@ -24,5 +24,6 @@
 				"parser": "jsonv"
 			}
 		}
-	]
+	],
+	"plugins": ["../src/index.mjs"]
 }

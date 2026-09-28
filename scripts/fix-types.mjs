@@ -16,8 +16,7 @@
  * This script copies the types from types/src to types/dist and updates source map references
  */
 
-import { copyFileSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { resolve } from "path";
+import { copyFileSync, existsSync, mkdirSync } from "fs";
 
 // Copy all files from types/src to types/dist
 const srcDir = "./types/src";

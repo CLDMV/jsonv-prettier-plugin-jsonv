@@ -1,0 +1,13 @@
+{
+	base: { timeout: 30, nested: { deep: "value" } },
+	bare: base,
+	member: base.timeout,
+	deep: base.nested.deep,
+	arrayOfRefs: [bare, member, base.nested],
+	spacedMember: base . nested . deep,
+	commentMember: base /* obj */ . /* prop */ timeout,
+	lineMember: base // after object
+	.timeout,
+	lineMemberAfterDot: base. // after dot
+	timeout
+}

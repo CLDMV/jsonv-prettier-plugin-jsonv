@@ -1,0 +1,11 @@
+{
+	// the port
+	port: 8080,
+	host: "x", /* block */
+	big: 1_000_000,
+	bits: 0b1111_0000,
+	hex: 0xFF,
+	url: `http://${host}:${port}`,
+	ref: host,
+	"quoted": true
+}
