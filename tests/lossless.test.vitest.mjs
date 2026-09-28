@@ -406,7 +406,9 @@ describe("comments", () => {
 
 	it("adds a space after // only before a letter or digit and keeps the rest of the text", async () => {
 		const input = "{\n//note\n//9 lives\n///triple\n//!bang\n//-----\n//\ttab\n//\n// trailing space   \na: 1 }";
-		expect(await format(input, tabs)).toBe("{\n\t// note\n\t// 9 lives\n\t///triple\n\t//!bang\n\t//-----\n\t//\ttab\n\t//\n\t// trailing space\n\ta: 1\n}\n");
+		expect(await format(input, tabs)).toBe(
+			"{\n\t// note\n\t// 9 lives\n\t///triple\n\t//!bang\n\t//-----\n\t//\ttab\n\t//\n\t// trailing space\n\ta: 1\n}\n"
+		);
 	});
 });
 
