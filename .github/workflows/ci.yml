@@ -265,18 +265,14 @@ jobs:
             upload_coverage_artifact: ${{ github.event.inputs.upload_coverage_artifact != 'false' }}
 
             # ── Type check (runs inside the coverage-badge job) ────────────────────
-            # Skipped deliberately: this package is JSDoc-typed JS (`src/**/*.mjs`),
-            # not `.ts` source. `.configs/tsconfig.types.jsonc` (used by
-            # `build:types`) runs with `checkJs: false` — it only emits `.d.mts`
-            # declarations from the JSDoc annotations, it does not verify them. A
-            # real `checkJs: true` pass surfaces ~10 pre-existing JSDoc/type gaps
-            # against prettier's plugin API (untyped `Function` params, a private
-            # `Parser#tokens` access, etc.) that are unrelated to this CI/vitest-
-            # runner onboarding — see the tracking issue. No meaningful automated
-            # type-check exists yet; revisit once those are fixed and a `test:types`
-            # script is added. (Onboarded 2026-08-02; PR #32 tracks turning this on.)
+            # This package is JSDoc-typed JS (`src/**/*.mjs`), not `.ts` source.
+            # `npm run test:types` rebuilds the declarations with
+            # `.configs/tsconfig.types.jsonc` (`checkJs` + `strict`, so a JSDoc type
+            # error fails the build), then compiles `tests/types/consumer.test-d.mts`
+            # against the BUILT `types/dist/index.d.mts` the way a consumer would
+            # (typed plugin, typed plugin options, `@ts-expect-error` checks).
             type_check_command: ${{ github.event.inputs.type_check_command || 'npm run test:types' }}
-            skip_type_check: true
+            skip_type_check: false
 
             # ── PR coverage badge ─────────────────────────────────────────────────
             # Injects a Shields.io badge + breakdown table directly into the PR body
