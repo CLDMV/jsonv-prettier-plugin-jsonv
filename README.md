@@ -83,6 +83,15 @@ module.exports = {
 | `jsonvYear`    | number | 2025    | The year to use for JSONV features (2015-2025) |
 | `strictBigInt`   | boolean| false   | Whether to enforce strict BigInt parsing     |
 
+### Trailing commas
+
+The plugin honours Prettier's [`trailingComma`](https://prettier.io/docs/options#trailing-commas) option the way Prettier's JavaScript printer does for object and array literals:
+
+- `"all"` (Prettier's default) and `"es5"` put a comma after the last entry of every object or array that breaks across lines. Non-empty objects and arrays are always printed one entry per line, so only empty ones (`{ }`, `[]`) are printed on a single line, and they never get a comma.
+- `"none"` never adds one.
+
+Trailing commas already in the source are not kept as written: the option normalizes them, adding or removing the comma after the last entry. Every jsonv year (2011-2025) allows trailing commas, so the comma never makes a document invalid, and it never changes the parsed value. Comments next to the last entry stay in place: `a: 1, // note` keeps the comment after the comma, `a: 1 /* note */,` keeps it before.
+
 ## License
 
 [![GitHub license]][github_license_url] [![npm license]][npm_license_url]

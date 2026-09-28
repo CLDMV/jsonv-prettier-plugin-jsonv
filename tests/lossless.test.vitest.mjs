@@ -2,6 +2,10 @@
  * Targeted tests for lossless printing (issue #25): keys, literals, comments,
  * templates and references are printed from their source text, and every
  * comment is kept in place.
+ *
+ * These expectations are written without trailing commas, so every format
+ * here runs with `trailingComma: "none"`; trailing commas are covered in
+ * trailing-comma.test.vitest.mjs.
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
@@ -9,10 +13,21 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import prettier from "prettier";
 import plugin from "../src/index.mjs";
-import { format, evaluate } from "./helpers/jsonv.mjs";
+import { format as formatJsonv, evaluate } from "./helpers/jsonv.mjs";
 
 const fixturesDir = resolve(fileURLToPath(new URL(".", import.meta.url)), "fixtures");
 const tabs = { useTabs: true };
+const noTrailingComma = { trailingComma: "none" };
+
+/**
+ * Format with the plugin, without trailing commas unless `options` says otherwise.
+ * @param {string} text
+ * @param {object} [options]
+ * @returns {Promise<string>}
+ */
+function format(text, options = {}) {
+	return formatJsonv(text, { ...noTrailingComma, ...options });
+}
 
 /** A `\u` escape prefix, built so no tool rewrites it into the character itself. */
 const U = "\\" + "u";
@@ -250,7 +265,7 @@ describe("templates and references", () => {
 		const input = "{ h: 1, a: `x}${h}}y${ h /* c */ }z` }";
 		const expected = await format(input);
 		expect(expected).toBe("{\n  h: 1,\n  a: `x}${h}}y${h /* c */}z`\n}\n");
-		expect(await prettier.format(input, { parser: "jsonv", plugins: [mangled] })).toBe(expected);
+		expect(await prettier.format(input, { ...noTrailingComma, parser: "jsonv", plugins: [mangled] })).toBe(expected);
 	});
 
 	it("prints references and member access", async () => {

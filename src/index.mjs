@@ -16,7 +16,7 @@
 import { parseToAst } from "@cldmv/jsonv/parser";
 import { doc, util } from "prettier";
 
-const { hardline, indent, join } = doc.builders;
+const { group, hardline, ifBreak, indent, join } = doc.builders;
 
 /**
  * Printing is lossless: every literal, key and identifier is printed from its
@@ -160,8 +160,21 @@ function printDanglingComments(path, options, filter = () => true) {
 }
 
 /**
- * Print an object or array: one entry per line, no trailing comma, and at
- * most one blank line kept between entries where the source had one.
+ * Print an object or array: one entry per line, and at most one blank line
+ * kept between entries where the source had one.
+ *
+ * The last entry gets a trailing comma per prettier's `trailingComma` option,
+ * as prettier's JS printer does for object and array literals: `"all"` and
+ * `"es5"` add one when the container breaks across lines, `"none"` never
+ * does, and an empty container never gets one. Commas in the source are not
+ * kept: the option normalizes them, adding or removing the trailing comma.
+ * Every jsonv year allows trailing commas, and the plugin always parses in
+ * `jsonv` mode, so no target syntax forbids the comma.
+ *
+ * The comma goes where the source's own comma would: after a same-line block
+ * comment written before it (`a: 1 /* c *\/,`), before one written after it
+ * (`a: 1, /* c *\/`, see handleEndOfLineComment), and before any line or
+ * own-line comment, which prettier prints as a line suffix.
  * @internal
  * @param {import('prettier').AstPath} path
  * @param {import('prettier').ParserOptions} options
@@ -183,11 +196,12 @@ function printContainer(path, options, print, key, open, close) {
 
 	// Comments written after an entry's comma, on the same line (see handleEndOfLineComment).
 	const afterComma = entries.map((entry) => printDanglingComments(path, options, (comment) => comment.marker === entry));
+	const trailingComma = options.trailingComma === "none" ? "" : ifBreak(",");
 	const parts = [];
 	path.each((entryPath, index) => {
 		parts.push(print());
 		const isLast = index === entries.length - 1;
-		if (!isLast) parts.push(",");
+		parts.push(isLast ? trailingComma : ",");
 		for (const comment of afterComma[index]) {
 			parts.push(" ", comment);
 		}
@@ -198,7 +212,7 @@ function printContainer(path, options, print, key, open, close) {
 			}
 		}
 	}, key);
-	return [open, indent([hardline, ...parts]), hardline, close];
+	return group([open, indent([hardline, ...parts]), hardline, close]);
 }
 
 /**
@@ -307,7 +321,7 @@ function handleLineComment(comment, text) {
 }
 
 /**
- * Keep a block comment that ends a line after an object/array entry's comma
+ * Keep a block comment written after an object/array entry's comma
  * (`a: 1, /* note *\/`) after the comma, instead of prettier's default of
  * moving it in front of the comma. Line comments already print there.
  * @internal
@@ -315,7 +329,7 @@ function handleLineComment(comment, text) {
  * @param {string} text
  * @returns {boolean} `true` when the comment was attached here.
  */
-function handleEndOfLineComment(comment, text) {
+function handleCommentAfterComma(comment, text) {
 	const { enclosingNode, precedingNode } = comment;
 	if (comment.type === "Block" && precedingNode && CONTAINERS.has(enclosingNode?.type)) {
 		const commaIndex = util.getNextNonSpaceNonCommentCharacterIndex(text, locEnd(precedingNode));
@@ -324,7 +338,33 @@ function handleEndOfLineComment(comment, text) {
 			return true;
 		}
 	}
-	return handleLineComment(comment, text);
+	return false;
+}
+
+/**
+ * A comment that ends a line: after an entry's comma, or inside a construct
+ * printed on one line.
+ * @internal
+ * @param {any} comment
+ * @param {string} text
+ * @returns {boolean} `true` when the comment was attached here.
+ */
+function handleEndOfLineComment(comment, text) {
+	return handleCommentAfterComma(comment, text) || handleLineComment(comment, text);
+}
+
+/**
+ * A comment followed by more code on its line. After the last entry's comma
+ * (`[1, /* note *\/ ]`) it stays after the comma like an end-of-line one;
+ * before a following entry it is left to prettier, which makes it that
+ * entry's leading comment.
+ * @internal
+ * @param {any} comment
+ * @param {string} text
+ * @returns {boolean} `true` when the comment was attached here.
+ */
+function handleRemainingComment(comment, text) {
+	return (!comment.followingNode && handleCommentAfterComma(comment, text)) || handleLineComment(comment, text);
 }
 
 /**
@@ -425,7 +465,7 @@ const plugin = {
 			handleComments: {
 				ownLine: handleLineComment,
 				endOfLine: handleEndOfLineComment,
-				remaining: handleLineComment
+				remaining: handleRemainingComment
 			}
 		}
 	},

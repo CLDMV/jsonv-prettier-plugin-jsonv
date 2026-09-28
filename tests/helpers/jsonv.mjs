@@ -39,3 +39,36 @@ export function commentTexts(text, year) {
 		comment.type === "Line" ? `//${comment.value.trim()}` : `/*${comment.value}*/`
 	);
 }
+
+/**
+ * The non-empty objects and arrays of a document, in source order, with
+ * whether each spans more than one line and whether a comma follows its last
+ * entry (comments between the last entry and the closing bracket are ignored).
+ * @param {string} text
+ * @param {number} year
+ * @returns {{ multiLine: boolean, comma: boolean }[]}
+ */
+export function trailingCommas(text, year) {
+	const { program, comments } = parseToAst(text, { year });
+	const containers = [];
+	const visit = (node) => {
+		if (!node || typeof node !== "object") return;
+		const entries = node.type === "ObjectExpression" ? node.properties : node.type === "ArrayExpression" ? node.elements : null;
+		if (entries?.length) {
+			const from = entries.at(-1).loc.end.offset;
+			const to = node.loc.end.offset - 1;
+			let between = text.slice(from, to);
+			for (const comment of comments) {
+				if (comment.loc.start.offset >= from && comment.loc.end.offset <= to) {
+					between = between.replace(text.slice(comment.loc.start.offset, comment.loc.end.offset), "");
+				}
+			}
+			containers.push({ multiLine: node.loc.start.line !== node.loc.end.line, comma: between.includes(",") });
+		}
+		for (const [key, value] of Object.entries(node)) {
+			if (key !== "loc") visit(value);
+		}
+	};
+	visit(program);
+	return containers;
+}
