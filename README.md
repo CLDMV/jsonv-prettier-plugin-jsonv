@@ -6,6 +6,22 @@
 
 A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
+## ✨ What's New
+
+### Latest: v1.0.7 (September 2026)
+
+- **Formatting is now lossless** — every version through v1.0.6 could silently corrupt a `.jsonv` file on format: unquoted keys collapsed to `"[object Object]"`, comments were dropped, and numbers were rewritten from their evaluated value (`1_000_000` → `1000000`, `0xFF` → `255`). The printer is rewritten around `@cldmv/jsonv` 1.1.0's `parseToAst()` so keys, numbers, strings and comments are all printed from their source text, with round-trip tests over the full jsonv fixture corpus. Requires `@cldmv/jsonv` 1.1.0 or later (#26, fixes #25).
+- [View full v1.0.7 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.7.md)
+
+### Recent Releases
+
+- **v1.0.6** (September 2026) — GPG signing wired into the hotfix redirector, and the dev toolchain re-aligned on vitest 5.0.0 (#20, #23) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.6.md))
+- **v1.0.5** (September 2026) — hotfix: vitest and @vitest/coverage-v8 bumped to 5.0.0 for a path-traversal advisory in the dev toolchain (#22) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.5.md))
+- **v1.0.4** (September 2026) — dependency and CI-tooling updates, including `@cldmv/jsonv` to 1.0.2 (#9, #14, #15) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.4.md))
+- **v1.0.3** (August 2026) — CI concurrency fix so release-relevant runs are never superseded (#7, #8) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.3.md))
+
+📚 **For complete version history, see [docs/changelog/](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/tree/master/docs/changelog/) and the [GitHub Releases](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/releases).**
+
 ## Features
 
 - Formats `.jsonv` files using the @cldmv/jsonv parser
