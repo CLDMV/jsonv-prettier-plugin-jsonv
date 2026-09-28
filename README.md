@@ -8,10 +8,11 @@ A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
 ## ✨ What's New
 
-### Latest: v1.0.7 (September 2026)
+### Latest: v1.1.0 (September 2026)
 
 - **Formatting is now lossless** — every version through v1.0.6 could silently corrupt a `.jsonv` file on format: unquoted keys collapsed to `"[object Object]"`, comments were dropped, and numbers were rewritten from their evaluated value (`1_000_000` → `1000000`, `0xFF` → `255`). The printer is rewritten around `@cldmv/jsonv` 1.1.0's `parseToAst()` so keys, numbers, strings and comments are all printed from their source text, with round-trip tests over the full jsonv fixture corpus. Requires `@cldmv/jsonv` 1.1.0 or later (#26, fixes #25).
-- [View full v1.0.7 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.0.7.md)
+- **Trailing commas now follow Prettier's `trailingComma` option** — `"all"` (Prettier's default) and `"es5"` add a comma after the last entry of a multi-line object or array, `"none"` never does, matching Prettier's own JavaScript behavior instead of silently ignoring the setting (#31, fixes #27).
+- [View full v1.1.0 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.0.md)
 
 ### Recent Releases
 
