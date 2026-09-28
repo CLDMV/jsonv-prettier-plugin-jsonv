@@ -15,11 +15,12 @@
 	},
 	"scripts": {
 		"build": "npm run build:js && npm run build:types && npm run fix-types",
-		"build:ci": "npm run build",
+		"build:ci": "npm run build && npm run test:types",
 		"build:js": "node scripts/build.mjs",
 		"build:types": "tsc -p .configs/tsconfig.types.jsonc",
 		"fix-types": "node scripts/fix-types.mjs",
 		"test": "node tests/run-vitest.mjs",
+		"test:types": "npm run build:types && npm run fix-types && tsc -p tests/types/tsconfig.json",
 		"test:watch": "vitest --config .configs/vitest.config.mjs",
 		"coverage": "node tests/run-vitest.mjs --coverage-quiet",
 		"ci:coverage": "npm run coverage"

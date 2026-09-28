@@ -19,6 +19,93 @@ import { doc, util } from "prettier";
 const { group, hardline, ifBreak, indent, join } = doc.builders;
 
 /**
+ * @import { AstPath, BooleanSupportOption, Doc, IntSupportOption, Parser, ParserOptions, Printer, SupportLanguage } from "prettier"
+ * @import { ArrayExpression, Comment, Expression, Identifier, Literal, MemberExpression, ObjectExpression, ParseError, ParseOptions, Program, Property, SourceLocation, TemplateLiteral } from "@cldmv/jsonv"
+ */
+
+/**
+ * An ES year `@cldmv/jsonv` can target.
+ * @typedef {NonNullable<ParseOptions["year"]>} JsonvYear
+ */
+
+/**
+ * The plugin's own formatting options, passed to prettier next to its
+ * built-in options (`prettier.format(text, { parser: "jsonv", plugins: [plugin], jsonvYear: 2021 })`).
+ * @typedef {object} JsonvOptions
+ * @property {JsonvYear} [jsonvYear] - Target ES year for jsonv features. Default `2025`.
+ * @property {boolean} [strictBigInt] - Require an explicit `n` suffix for integers outside the safe range. Default `false`.
+ */
+
+/**
+ * The fields prettier's comment attachment (and this plugin) set on a node.
+ * @typedef {object} JsonvNodeAttachment
+ * @property {JsonvComment[]} [comments] - The comments attached to this node.
+ */
+
+/**
+ * A comment as prettier's comment attachment sees it: `@cldmv/jsonv`'s
+ * `Comment` plus the fields prettier sets while attaching it.
+ * @typedef {object} JsonvCommentAttachment
+ * @property {boolean} [leading] - Printed before the node it is attached to.
+ * @property {boolean} [trailing] - Printed after the node it is attached to.
+ * @property {boolean} [printed] - Set once the comment has been printed.
+ * @property {JsonvSyntaxNode} [marker] - For a dangling comment: the entry or expression it follows.
+ * @property {JsonvSyntaxNode} [enclosingNode] - The innermost node that contains the comment.
+ * @property {JsonvSyntaxNode} [precedingNode] - The child of `enclosingNode` just before the comment.
+ * @property {JsonvSyntaxNode} [followingNode] - The child of `enclosingNode` just after the comment.
+ * @property {undefined} [comments] - Comments are never attached to comments.
+ */
+
+/**
+ * @typedef {Comment & JsonvCommentAttachment} JsonvComment
+ * @typedef {Program & JsonvNodeAttachment} JsonvProgram
+ * @typedef {ObjectExpression & JsonvNodeAttachment} JsonvObjectExpression
+ * @typedef {Property & JsonvNodeAttachment} JsonvProperty
+ * @typedef {Literal & JsonvNodeAttachment} JsonvLiteral
+ * @typedef {Identifier & JsonvNodeAttachment} JsonvIdentifier
+ * @typedef {MemberExpression & JsonvNodeAttachment} JsonvMemberExpression
+ * @typedef {TemplateLiteral & JsonvNodeAttachment} JsonvTemplateLiteral
+ */
+
+/**
+ * An `ArrayExpression`. `@cldmv/jsonv` types `elements` ESTree-style, with
+ * `null` for a hole, but jsonv has no holes: its parser reads a value for
+ * every element, so the list never contains `null`.
+ * @typedef {Omit<ArrayExpression, "elements"> & { elements: Expression[] } & JsonvNodeAttachment} JsonvArrayExpression
+ */
+
+/**
+ * A node of the positioned AST `@cldmv/jsonv`'s `parseToAst` returns.
+ * @typedef {JsonvProgram | JsonvObjectExpression | JsonvArrayExpression | JsonvProperty | JsonvLiteral | JsonvIdentifier | JsonvMemberExpression | JsonvTemplateLiteral} JsonvSyntaxNode
+ */
+
+/**
+ * A node the printer is handed: a syntax node, or a comment (for `printComment`).
+ * @typedef {JsonvSyntaxNode | JsonvComment} JsonvNode
+ */
+
+/**
+ * The options the parser and printer receive: prettier's resolved options
+ * plus this plugin's, which prettier fills from their defaults.
+ * @typedef {ParserOptions<JsonvNode> & JsonvOptions} JsonvParserOptions
+ */
+
+/**
+ * The `print` callback prettier passes to `Printer#print`.
+ * @typedef {Parameters<Printer<JsonvNode>["print"]>[2]} JsonvPrint
+ */
+
+/**
+ * The plugin object: its language, `jsonv` parser and printer, and its options.
+ * Assignable to prettier's `Plugin`.
+ * @typedef {object} JsonvPlugin
+ * @property {SupportLanguage[]} languages - The `jsonv` language (`.jsonv` files).
+ * @property {{ jsonv: Parser<JsonvNode> }} parsers - The `jsonv` parser.
+ * @property {{ jsonv: Printer<JsonvNode> }} printers - The `jsonv` printer (the parser's `astFormat`).
+ * @property {{ jsonvYear: IntSupportOption, strictBigInt: BooleanSupportOption }} options - The option definitions behind {@link JsonvOptions}.
+ */
+
+/**
  * Printing is lossless: every literal, key and identifier is printed from its
  * source text, never from its evaluated value, and every comment is attached
  * through prettier's comment API so it is printed exactly once, in order.
@@ -45,8 +132,10 @@ const VISITOR_KEYS = {
 };
 
 /**
- * Node types whose entries are separated by commas.
+ * Node types whose entries are separated by commas. Queried with
+ * `enclosingNode?.type`, which is `undefined` for a comment outside every node.
  * @internal
+ * @type {ReadonlySet<string | undefined>}
  */
 const CONTAINERS = new Set(["ObjectExpression", "ArrayExpression"]);
 
@@ -65,20 +154,22 @@ const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
 /**
  * @internal
- * @param {{ loc: { start: { offset: number } } }} node
+ * @param {{ loc?: SourceLocation }} node - Any positioned node or comment.
  * @returns {number}
  */
 function locStart(node) {
-	return node.loc.start.offset;
+	// `loc` is optional on @cldmv/jsonv's `ASTNode`, but parseToAst positions every node.
+	return /** @type {SourceLocation} */ (node.loc).start.offset;
 }
 
 /**
  * @internal
- * @param {{ loc: { end: { offset: number } } }} node
+ * @param {{ loc?: SourceLocation }} node - Any positioned node or comment.
  * @returns {number}
  */
 function locEnd(node) {
-	return node.loc.end.offset;
+	// `loc` is optional on @cldmv/jsonv's `ASTNode`, but parseToAst positions every node.
+	return /** @type {SourceLocation} */ (node.loc).end.offset;
 }
 
 /**
@@ -88,7 +179,7 @@ function locEnd(node) {
  * Everything else (other quoted keys, numeric and BigInt keys) is printed
  * exactly as written.
  * @internal
- * @param {{ value: unknown, raw: string }} node - A `Literal` key node.
+ * @param {JsonvLiteral} node - A `Literal` key node.
  * @returns {string}
  */
 function printLiteralKey(node) {
@@ -126,9 +217,10 @@ function findTemplateTextEnd(text, pos) {
 function findInterpolationEnd(text, pos) {
 	while (pos < text.length && text[pos] !== "}") {
 		if (text.startsWith("//", pos)) {
-			// A line comment inside an interpolation always ends before its `}`.
+			// A line comment inside an interpolation always ends before its `}`,
+			// so a line terminator follows it and `exec` cannot return `null`.
 			LINE_TERMINATOR.lastIndex = pos;
-			pos = LINE_TERMINATOR.exec(text).index;
+			pos = /** @type {RegExpExecArray} */ (LINE_TERMINATOR.exec(text)).index;
 		} else if (text.startsWith("/*", pos)) {
 			pos = text.indexOf("*/", pos + 2) + 2;
 		} else {
@@ -142,19 +234,20 @@ function findInterpolationEnd(text, pos) {
  * Print the comments of the current node that are neither leading nor
  * trailing (and match `filter`), joined by hard line breaks.
  * @internal
- * @param {import('prettier').AstPath} path
- * @param {import('prettier').ParserOptions} options
- * @param {(comment: any) => boolean} [filter]
- * @returns {import('prettier').Doc[]}
+ * @param {AstPath<JsonvNode>} path
+ * @param {ParserOptions<JsonvNode>} options
+ * @param {(comment: JsonvComment) => boolean} [filter]
+ * @returns {Doc[]}
  */
 function printDanglingComments(path, options, filter = () => true) {
+	/** @type {Doc[]} */
 	const parts = [];
 	if (!path.node.comments) return parts;
 	path.each((commentPath) => {
 		const comment = commentPath.node;
 		if (comment.leading || comment.trailing || !filter(comment)) return;
 		comment.printed = true;
-		parts.push(options.printer.printComment(commentPath, options));
+		parts.push(printComment(commentPath, options));
 	}, "comments");
 	return parts;
 }
@@ -176,16 +269,16 @@ function printDanglingComments(path, options, filter = () => true) {
  * (`a: 1, /* c *\/`, see handleEndOfLineComment), and before any line or
  * own-line comment, which prettier prints as a line suffix.
  * @internal
- * @param {import('prettier').AstPath} path
- * @param {import('prettier').ParserOptions} options
- * @param {Function} print
- * @param {"properties" | "elements"} key
+ * @param {AstPath<JsonvNode>} path - A path to an `ObjectExpression` or `ArrayExpression`.
+ * @param {ParserOptions<JsonvNode>} options
+ * @param {JsonvPrint} print
+ * @param {"properties" | "elements"} key - The name of that node's entry list.
+ * @param {Array<Property | Expression>} entries - That entry list.
  * @param {string} open
  * @param {string} close
- * @returns {import('prettier').Doc}
+ * @returns {Doc}
  */
-function printContainer(path, options, print, key, open, close) {
-	const entries = path.node[key];
+function printContainer(path, options, print, key, entries, open, close) {
 	if (entries.length === 0) {
 		const dangling = printDanglingComments(path, options);
 		if (dangling.length === 0) {
@@ -197,6 +290,7 @@ function printContainer(path, options, print, key, open, close) {
 	// Comments written after an entry's comma, on the same line (see handleEndOfLineComment).
 	const afterComma = entries.map((entry) => printDanglingComments(path, options, (comment) => comment.marker === entry));
 	const trailingComma = options.trailingComma === "none" ? "" : ifBreak(",");
+	/** @type {Doc[]} */
 	const parts = [];
 	path.each((entryPath, index) => {
 		parts.push(print());
@@ -221,20 +315,21 @@ function printContainer(path, options, print, key, open, close) {
  * verbatim) and the backticks, `${` and `}` are printed explicitly; the
  * quasis' own `raw` spans are not relied on.
  * @internal
- * @param {import('prettier').AstPath} path
- * @param {import('prettier').ParserOptions} options
- * @param {Function} print
- * @returns {import('prettier').Doc}
+ * @param {AstPath<JsonvNode>} path - A path to a `TemplateLiteral`.
+ * @param {ParserOptions<JsonvNode>} options
+ * @param {JsonvPrint} print
+ * @param {JsonvTemplateLiteral} node - That `TemplateLiteral`.
+ * @returns {Doc}
  */
-function printTemplateLiteral(path, options, print) {
-	const { node } = path;
+function printTemplateLiteral(path, options, print, node) {
 	const text = options.originalText;
+	/** @type {Doc[]} */
 	const parts = ["`"];
 	let pos = locStart(node) + 1;
 	node.expressions.forEach((expression, index) => {
 		const textEnd = findTemplateTextEnd(text, pos);
 		const comments = printDanglingComments(path, options, (comment) => comment.marker === expression);
-		parts.push(text.slice(pos, textEnd), "${", path.call(print, "expressions", index));
+		parts.push(text.slice(pos, textEnd), "${", print(["expressions", index]));
 		for (const comment of comments) {
 			parts.push(" ", comment, hardline);
 		}
@@ -247,26 +342,26 @@ function printTemplateLiteral(path, options, print) {
 
 /**
  * @internal
- * @param {import('prettier').AstPath} path
- * @param {import('prettier').ParserOptions} options
- * @param {Function} print
- * @returns {import('prettier').Doc}
+ * @param {AstPath<JsonvNode>} path
+ * @param {ParserOptions<JsonvNode>} options
+ * @param {JsonvPrint} print
+ * @returns {Doc}
  */
 function printNode(path, options, print) {
 	const { node } = path;
 
 	switch (node.type) {
 		case "Program":
-			return [path.call(print, "body"), hardline];
+			return [print("body"), hardline];
 
 		case "ObjectExpression":
-			return printContainer(path, options, print, "properties", "{", "}");
+			return printContainer(path, options, print, "properties", node.properties, "{", "}");
 
 		case "ArrayExpression":
-			return printContainer(path, options, print, "elements", "[", "]");
+			return printContainer(path, options, print, "elements", node.elements, "[", "]");
 
 		case "Property":
-			return [path.call(print, "key"), ": ", path.call(print, "value")];
+			return [print("key"), ": ", print("value")];
 
 		case "Literal":
 			return path.key === "key" ? printLiteralKey(node) : node.raw;
@@ -275,10 +370,10 @@ function printNode(path, options, print) {
 			return node.name;
 
 		case "MemberExpression":
-			return [path.call(print, "object"), ".", path.call(print, "property")];
+			return [print("object"), ".", print("property")];
 
 		case "TemplateLiteral":
-			return printTemplateLiteral(path, options, print);
+			return printTemplateLiteral(path, options, print, node);
 
 		default:
 			throw new Error(`Unknown jsonv AST node type: ${node.type}`);
@@ -291,7 +386,8 @@ function printNode(path, options, print) {
  * interpolation), where prettier's default placement would move it to the end
  * of the output line and merge it with any other line comment there.
  * @internal
- * @param {any} comment
+ * @param {JsonvComment} comment
+ * @param {string} text
  * @returns {boolean} `true` when the comment was attached here.
  */
 function handleLineComment(comment, text) {
@@ -325,14 +421,15 @@ function handleLineComment(comment, text) {
  * (`a: 1, /* note *\/`) after the comma, instead of prettier's default of
  * moving it in front of the comma. Line comments already print there.
  * @internal
- * @param {any} comment
+ * @param {JsonvComment} comment
  * @param {string} text
  * @returns {boolean} `true` when the comment was attached here.
  */
 function handleCommentAfterComma(comment, text) {
 	const { enclosingNode, precedingNode } = comment;
 	if (comment.type === "Block" && precedingNode && CONTAINERS.has(enclosingNode?.type)) {
-		const commaIndex = util.getNextNonSpaceNonCommentCharacterIndex(text, locEnd(precedingNode));
+		// Only `false` for a start index outside the text, and a node's end offset is inside it.
+		const commaIndex = /** @type {number} */ (util.getNextNonSpaceNonCommentCharacterIndex(text, locEnd(precedingNode)));
 		if (text[commaIndex] === "," && commaIndex < locStart(comment)) {
 			util.addDanglingComment(enclosingNode, comment, precedingNode);
 			return true;
@@ -368,13 +465,25 @@ function handleRemainingComment(comment, text) {
 }
 
 /**
- * @typedef {import('prettier').Plugin} Plugin
- * @typedef {import('prettier').ParserOptions} ParserOptions
- * @typedef {import('prettier').AstPath} AstPath
- * @typedef {import('prettier').Doc} Doc
+ * Print a comment from its source text. A line comment gets a space after
+ * `//` when it starts with a letter or digit (`//note` -> `// note`); its text
+ * is otherwise kept as written, minus trailing whitespace. Block comments are
+ * printed verbatim.
+ * @internal
+ * @param {AstPath<JsonvNode>} commentPath
+ * @param {ParserOptions<JsonvNode>} options
+ * @returns {Doc}
  */
+function printComment(commentPath, options) {
+	const comment = commentPath.node;
+	if (comment.type === "Line") {
+		const text = comment.value.trimEnd();
+		return /^[\p{L}\p{N}]/u.test(text) ? `// ${text}` : `//${text}`;
+	}
+	return options.originalText.slice(locStart(comment), locEnd(comment));
+}
 
-/** @type {Plugin} */
+/** @type {JsonvPlugin} */
 const plugin = {
 	languages: [
 		{
@@ -391,10 +500,11 @@ const plugin = {
 			 * Parse with `@cldmv/jsonv`'s positioned AST: every node carries `loc`
 			 * offsets, literals carry `raw`, and all comments are returned.
 			 * @param {string} text
-			 * @param {ParserOptions} options
-			 * @returns {object}
+			 * @param {JsonvParserOptions} options
+			 * @returns {JsonvProgram}
 			 */
 			parse(text, options) {
+				/** @type {{ program: JsonvProgram, comments: JsonvComment[], errors: ParseError[] }} */
 				const { program, comments, errors } = parseToAst(text, {
 					year: options.jsonvYear,
 					strictBigInt: options.strictBigInt,
@@ -421,33 +531,17 @@ const plugin = {
 			print: printNode,
 
 			/**
-			 * @param {object} node
+			 * @param {JsonvNode} node
 			 * @returns {string[]}
 			 */
 			getVisitorKeys(node) {
 				return VISITOR_KEYS[node.type];
 			},
 
-			/**
-			 * Print a comment from its source text. A line comment gets a space
-			 * after `//` when it starts with a letter or digit (`//note` ->
-			 * `// note`); its text is otherwise kept as written, minus trailing
-			 * whitespace. Block comments are printed verbatim.
-			 * @param {import('prettier').AstPath} commentPath
-			 * @param {import('prettier').ParserOptions} options
-			 * @returns {import('prettier').Doc}
-			 */
-			printComment(commentPath, options) {
-				const comment = commentPath.node;
-				if (comment.type === "Line") {
-					const text = comment.value.trimEnd();
-					return /^[\p{L}\p{N}]/u.test(text) ? `// ${text}` : `//${text}`;
-				}
-				return options.originalText.slice(locStart(comment), locEnd(comment));
-			},
+			printComment,
 
 			/**
-			 * @param {object} node
+			 * @param {JsonvNode} node
 			 * @returns {boolean}
 			 */
 			canAttachComment(node) {
@@ -455,7 +549,7 @@ const plugin = {
 			},
 
 			/**
-			 * @param {object} node
+			 * @param {JsonvNode} node
 			 * @returns {boolean}
 			 */
 			isBlockComment(node) {
