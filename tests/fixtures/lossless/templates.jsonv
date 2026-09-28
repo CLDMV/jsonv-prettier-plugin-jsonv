@@ -1,0 +1,27 @@
+{
+	host: "localhost",
+	port: 8080,
+	server: { name: "api", ports: { http: 80 } },
+	url: `http://${host}:${port}`,
+	spaced: `${ host }:${  port  }`,
+	member: `${server.name} on ${server.ports.http}`,
+	braceAfter: `${host}}`,
+	braceBefore: `}${host}`,
+	bracesAround: `{${host}}`,
+	dollar: `$${port}`,
+	multiLine: `first ${host}
+second ${port}
+	third`,
+	escapes: `\`${host}\` \${raw} \n`,
+	blockInside: `${ /* the host */ host }`,
+	blockAfter: `${host /* after */}`,
+	lineInside: `${host // trailing line comment
+}`,
+	lineBefore: `${ // leading line comment
+host}`,
+	lineSecond: `${host}-${port // second interpolation
+}`,
+	lineSecondBefore: `${host}-${ // before second
+port}`,
+	both: `${ /* a */ host /* b */ }`
+}

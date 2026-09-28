@@ -1,0 +1,55 @@
+// Leading document comment
+/* Leading block comment */
+{
+	// Leading property comment
+	a: 1, // trailing line comment
+	b: 2, /* trailing block comment after comma */
+	c: 3 /* trailing block comment before comma */,
+	d /* between key and colon */: 4,
+	e: /* between colon and value */ 5,
+	f // line comment between key and colon
+	: 6,
+	g: // line comment between colon and value
+	7,
+	/* before h */ h: 8,
+
+	// After a blank line
+	i: 9,
+
+
+	// After two blank lines
+	j: { // after an opening brace
+		k: 10
+	},
+	emptyObject: { /* dangling block */ },
+	emptyObjectLine: {
+		// dangling line
+	},
+	emptyArray: [ /* dangling in array */ ],
+	emptyArrayLines: [
+		// first dangling
+		// second dangling
+	],
+	list: [
+		1, // one
+		2, /* two */
+		3 /* three */,
+		// before four
+		4
+		// after four
+	],
+	m: 11, /* first */ /* second */
+	n: 12 // last line comment
+	// own-line comment at the end of the object
+	/* own-line block at the end */
+	,o: /* multi
+	   line
+	   block */ 13,
+	///triple slash
+	//!bang
+	//no space
+	//	tab
+	//
+	p: 14
+} // Trailing document comment
+/* Trailing block comment */

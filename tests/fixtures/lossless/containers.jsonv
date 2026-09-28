@@ -1,0 +1,9 @@
+{
+	emptyObject: {},
+	spacedEmptyObject: {   },
+	emptyArray: [],
+	nested: { a: { b: { c: [ [], {}, [ { } ] ] } } },
+	trailingObject: { a: 1, b: 2, },
+	trailingArray: [ 1, 2, 3, ],
+	mixed: [ { a: 1 }, [ 2, 3 ], "four", null, true, false ],
+}

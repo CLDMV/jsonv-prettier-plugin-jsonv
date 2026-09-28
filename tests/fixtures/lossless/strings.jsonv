@@ -1,0 +1,22 @@
+{
+	double: "double",
+	single: 'single',
+	doubleWithSingle: "it's",
+	singleWithDouble: 'say "hi"',
+	escapedQuote: "say \"hi\"",
+	escapedSingle: 'it\'s',
+	escapes: "tab\there\nnewline \\ backslash \/ slash \b \f \r",
+	hexEscape: '\x41\x42',
+	unicodeEscape: "\u00e9\u20AC",
+	continuation: "first \
+second",
+	empty: "",
+	emptySingle: '',
+	nul: "\0",
+	nonAscii: "caf\u00e9 and café",
+	plainTemplate: `plain template`,
+	multiLineTemplate: `line one
+line two
+	indented line`,
+	templateEscapes: `a \` backtick and \${not interpolated}`
+}
