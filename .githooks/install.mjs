@@ -1,5 +1,20 @@
 #!/usr/bin/env node
 /**
+ *
+ *	@Project: @cldmv/prettier-plugin-jsonv
+ *	@Filename: /.githooks/install.mjs
+ *	@Date: 2026-09-28T20:02:02+00:00 (1790625722)
+ *	@Author: Nate Corcoran <CLDMV>
+ *	@Email: <Shinrai@users.noreply.github.com>
+ *	-----
+ *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
+ *	@Last modified time: 2026-10-02T12:20:08-07:00 (1790968808)
+ *	-----
+ *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
+ *
+ */
+
+/**
  * @fileoverview Installs the committed pre-commit hook into `.git/hooks/pre-commit`.
  *
  * Wire it into package.json so it runs on `npm install`. Use the guarded form
