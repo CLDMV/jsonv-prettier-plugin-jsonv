@@ -1,4 +1,19 @@
 /**
+ *
+ *	@Project: @cldmv/prettier-plugin-jsonv
+ *	@Filename: /tests/lossless.test.vitest.mjs
+ *	@Date: 2026-09-28T20:02:02+00:00 (1790625722)
+ *	@Author: Nate Corcoran <CLDMV>
+ *	@Email: <Shinrai@users.noreply.github.com>
+ *	-----
+ *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
+ *	@Last modified time: 2026-10-02T12:20:27-07:00 (1790968827)
+ *	-----
+ *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
+ *
+ */
+
+/**
  * Targeted tests for lossless printing (issue #25): keys, literals, comments,
  * templates and references are printed from their source text, and every
  * comment is kept in place.

@@ -28,7 +28,8 @@
 		"lint:fix": "eslint --config .configs/eslint.config.mjs . --fix",
 		"format": "prettier --config .configs/.prettierrc --write .",
 		"format:check": "prettier --config .configs/.prettierrc --check .",
-		"prepare": "node -e \"import('./.githooks/install.mjs').catch(()=>{})\""
+		"prepare": "node -e \"import('./.githooks/install.mjs').catch(()=>{})\"",
+		"fix:headers": "fix-headers --config .configs/fix-headers.json"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -44,7 +45,9 @@
 		"prettier": "^3.0.0"
 	},
 	"devDependencies": {
+		"@cldmv/configs": "^1.2.0",
 		"@cldmv/eslint-plugin-jsonv": "^1.0.12",
+		"@cldmv/fix-headers": "^2.1.1",
 		"@cldmv/jsonv": "^1.1.0",
 		"@cldmv/vitest-runner": "^1.2.0",
 		"@eslint/css": "^2.0.0",

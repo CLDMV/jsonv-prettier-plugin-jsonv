@@ -1,14 +1,16 @@
 /**
+ *
  *	@Project: @cldmv/prettier-plugin-jsonv
  *	@Filename: /scripts/fix-types.mjs
- *	@Date: 2026-04-25 21:39:37 -07:00 (1777178377)
+ *	@Date: 2026-04-25T21:39:37-07:00 (1777178377)
  *	@Author: Nate Corcoran <CLDMV>
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-04-25 21:44:55 -07:00 (1777178695)
+ *	@Last modified time: 2026-10-02T12:20:15-07:00 (1790968815)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
+ *
  */
 
 /**
