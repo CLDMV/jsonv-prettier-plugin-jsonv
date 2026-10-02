@@ -1,4 +1,19 @@
 /**
+ *
+ *	@Project: @cldmv/prettier-plugin-jsonv
+ *	@Filename: /tests/run-vitest.mjs
+ *	@Date: 2026-08-02T23:38:46-07:00 (1785739126)
+ *	@Author: Nate Corcoran <CLDMV>
+ *	@Email: <Shinrai@users.noreply.github.com>
+ *	-----
+ *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
+ *	@Last modified time: 2026-10-02T12:20:28-07:00 (1790968828)
+ *	-----
+ *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
+ *
+ */
+
+/**
  * @fileoverview OOM-safe Vitest runner for @cldmv/prettier-plugin-jsonv — delegates to
  * @cldmv/vitest-runner, which spawns each test file in its own child process and
  * (under coverage) uses a blob-per-file + `--mergeReports` strategy so a single
