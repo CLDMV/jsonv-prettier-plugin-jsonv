@@ -8,17 +8,17 @@ A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
 ## ✨ What's New
 
-### Latest: v1.1.4 (October 2026)
+### Latest: v1.1.5 (October 2026)
 
-- **Header tooling on fix-headers 2.2.0** — the `@cldmv/fix-headers` dev dependency moves to 2.2.0, so `@Last modified by` follows content edits only, and `@cldmv/configs` moves to 1.2.4, which turns off the forced author updates. The header pass was re-run and every file already matched, so nothing was restamped. No plugin code, published file or runtime dependency changed (#51, #54).
-- [View full v1.1.4 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.4.md)
+- **Dev-tooling dependency bumps** — Vitest 5.0.3, ESLint 10.12.0, `globals` 17.13.0 and `@cldmv/vitest-runner` 1.5.3 (which raises its own Node.js floor to 22.12 and brings in `chalk` 6) update in the lockfile. No plugin code, published file, peer dependency range or `engines` field changed, so it's a drop-in replacement ([#56](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/56), [#57](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/57), [#59](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/59), [#60](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/60)).
+- [View full v1.1.5 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.5.md)
 
 ### Recent Releases
 
+- **v1.1.4** (October 2026) — dev tooling on `@cldmv/fix-headers` 2.2.0 and `@cldmv/configs` 1.2.4; no file was restamped and no runtime change (#51, #54) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.4.md))
 - **v1.1.3** (October 2026) — the CI `✅ Required PR Check` mirror job runs on every path instead of being skipped on in-repo PRs (#49) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.3.md))
 - **v1.1.2** (October 2026) — dev-dependency bumps, including `@cldmv/vitest-runner` 1.5.1 and `@cldmv/jsonv` 1.1.1 in development (#46, #47) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.2.md))
 - **v1.1.1** (October 2026) — uniform file headers from the shared CLDMV fix-headers config, and a skipped PR run no longer satisfies Required PR Check (#44, #45) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.1.md))
-- **v1.1.0** (September 2026) — lossless printing from `@cldmv/jsonv`'s source AST (fixing key, comment and number corruption), `trailingComma` support and a typed plugin (#26, #31, #32) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.0.md))
 
 📚 **For complete version history, see [docs/changelog/](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/tree/master/docs/changelog/) and the [GitHub Releases](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/releases).**
 
