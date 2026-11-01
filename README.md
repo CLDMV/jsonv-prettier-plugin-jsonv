@@ -38,7 +38,7 @@ npm install --save-dev @cldmv/prettier-plugin-jsonv prettier @cldmv/jsonv
 
 ## Usage
 
-The plugin needs Node.js `^20.19.0 || >=22.13.0` and Prettier 3. It ships an ES module entry and a CommonJS entry, so it loads from either kind of Prettier config.
+The plugin needs Node.js `>=22.22.0` and Prettier 3. It ships an ES module entry and a CommonJS entry, so it loads from either kind of Prettier config.
 
 ### Using `.prettierrc.mjs` or `prettier.config.mjs`:
 
