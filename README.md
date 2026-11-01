@@ -8,10 +8,11 @@ A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
 ## ✨ What's New
 
-### Latest: v1.1.5 (October 2026)
+### Latest: v1.2.0 (November 2026)
 
-- **Dev-tooling dependency bumps** — Vitest 5.0.3, ESLint 10.12.0, `globals` 17.13.0 and `@cldmv/vitest-runner` 1.5.3 (which raises its own Node.js floor to 22.12 and brings in `chalk` 6) update in the lockfile. No plugin code, published file, peer dependency range or `engines` field changed, so it's a drop-in replacement ([#56](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/56), [#57](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/57), [#59](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/59), [#60](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/60)).
-- [View full v1.1.5 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.5.md)
+- **CommonJS entry and tsup build** — `require("@cldmv/prettier-plugin-jsonv")` now returns the plugin object, so the plugin loads from a `.prettierrc.cjs` or `prettier.config.cjs` as well as from an ES module config. The build moves to tsup, `dist/index.cjs` is a thin wrapper around the ES module rather than a second bundle, and a `prettier-plugin-jsonv-dev` export condition loads `src/` in a checkout. The formatting code is unchanged ([#84](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/84), [#82](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/issues/82)).
+- **Node.js 22.22.0 or later is required** — `engines.node` rises from `>=18.0.0`, so upgrade Node.js before upgrading the plugin. Dev-only dependency updates and `katex`/`minimatch` overrides round out the release ([#85](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/85)).
+- [View full v1.2.0 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.0.md)
 
 ### Recent Releases
 
