@@ -1,7 +1,7 @@
 /**
  * @fileoverview Type-level consumer test. It imports the BUILT declarations through the
  * package's own `exports` (a self-reference by package name resolves to
- * `types/dist/index.d.mts`) and uses the plugin the way a prettier consumer would. It is
+ * `types/src/index.d.mts`) and uses the plugin the way a prettier consumer would. It is
  * compiled with `tsc --noEmit` by `npm run test:types`; every `@ts-expect-error` must still
  * see an error.
  */

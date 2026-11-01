@@ -38,12 +38,12 @@ npm install --save-dev @cldmv/prettier-plugin-jsonv prettier @cldmv/jsonv
 
 ## Usage
 
-Add the plugin to your Prettier configuration:
+The plugin needs Node.js `>=22.22.0` and Prettier 3. It ships an ES module entry and a CommonJS entry, so it loads from either kind of Prettier config.
 
 ### Using `.prettierrc.mjs` or `prettier.config.mjs`:
 
 ```javascript
-import jsonv from "prettier-plugin-jsonv";
+import jsonv from "@cldmv/prettier-plugin-jsonv";
 
 export default {
 	plugins: [jsonv],
@@ -59,11 +59,11 @@ export default {
 };
 ```
 
-### Using `.prettierrc` or `prettier.config.js`:
+### Using `.prettierrc.cjs` or `prettier.config.cjs`:
 
 ```javascript
 module.exports = {
-	plugins: ["prettier-plugin-jsonv"],
+	plugins: [require("@cldmv/prettier-plugin-jsonv")],
 	overrides: [
 		{
 			files: "*.jsonv",
@@ -75,6 +75,8 @@ module.exports = {
 	]
 };
 ```
+
+`require("@cldmv/prettier-plugin-jsonv")` returns the plugin object itself. In a JSON `.prettierrc`, list the plugin by name instead: `"plugins": ["@cldmv/prettier-plugin-jsonv"]`.
 
 ## Configuration Options
 
@@ -91,6 +93,18 @@ The plugin honours Prettier's [`trailingComma`](https://prettier.io/docs/options
 - `"none"` never adds one.
 
 Trailing commas already in the source are not kept as written: the option normalizes them, adding or removing the comma after the last entry. Every jsonv year (2011-2025) allows trailing commas, so the comma never makes a document invalid, and it never changes the parsed value. Comments next to the last entry stay in place: `a: 1, // note` keeps the comment after the comma, `a: 1 /* note */,` keeps it before.
+
+## Development
+
+The published package contains only the built `dist/` (`dist/index.mjs`, and `dist/index.cjs` for `require()`) plus the generated `types/`. In a checkout, the `prettier-plugin-jsonv-dev` export condition points the package at `src/` instead:
+
+| Run                                                       | Loads                                        |
+| --------------------------------------------------------- | -------------------------------------------- |
+| `node app.mjs`                                            | `dist/index.mjs` (run `npm run build` first) |
+| `node --conditions=prettier-plugin-jsonv-dev app.mjs`     | `src/index.mjs`                              |
+| `require()` with `--conditions=prettier-plugin-jsonv-dev` | `src/index.cjs`, which loads `src/index.mjs` |
+
+Set it once per shell with `export NODE_OPTIONS=--conditions=prettier-plugin-jsonv-dev`. `npm test` runs the Vitest suite against `src/` with the condition, then builds and checks the CommonJS entry in `dist/` with `node --test`.
 
 ## License
 

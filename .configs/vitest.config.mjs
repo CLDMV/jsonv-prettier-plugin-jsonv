@@ -7,7 +7,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-10-02T12:20:08-07:00 (1790968808)
+ *	@Last modified time: 2026-11-01T12:08:56-08:00 (1793563736)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  *
@@ -23,11 +23,25 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export default defineConfig({
 	root,
+	resolve: {
+		// Replaces the defaults, so keep the usual ones alongside the package's own
+		// condition (which routes the "." export to src/).
+		conditions: ["prettier-plugin-jsonv-dev", "module", "browser", "development|production"]
+	},
+	ssr: {
+		// Vitest often goes through the SSR resolve pipeline even in node tests.
+		resolve: {
+			conditions: ["prettier-plugin-jsonv-dev", "node", "development|production"]
+		}
+	},
 	test: {
 		include: ["tests/**/*.test.vitest.mjs"],
 		exclude: ["node_modules"],
 		environment: "node",
 		testTimeout: 30000,
+		// Workers get the condition on their node CLI (execArgv), so Node's own resolver
+		// (including require() of the package from src/index.cjs tests) loads src/ too.
+		nodeOptions: ["--conditions=prettier-plugin-jsonv-dev"],
 		reporters: ["dot"],
 		coverage: {
 			provider: "v8",
