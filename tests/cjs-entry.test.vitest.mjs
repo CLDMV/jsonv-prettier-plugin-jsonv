@@ -7,7 +7,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-11-01T13:14:07-08:00 (1793567647)
+ *	@Last modified time: 2026-11-01T16:29:24-08:00 (1793579364)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  *
@@ -66,7 +66,7 @@ describe("src/index.cjs", () => {
 		expect(() => require("../src/index.cjs")).toThrow(
 			expect.objectContaining({
 				code: "ERR_REQUIRE_ESM",
-				message: expect.stringContaining("require() needs Node.js >=22.22.0")
+				message: expect.stringContaining("require() needs Node.js ^20.19.0 or >=22.13.0")
 			})
 		);
 	});

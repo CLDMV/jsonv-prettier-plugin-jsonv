@@ -8,18 +8,17 @@ A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
 ## ✨ What's New
 
-### Latest: v1.2.0 (November 2026)
+### Latest: v1.2.1 (November 2026)
 
-- **CommonJS entry and tsup build** — `require("@cldmv/prettier-plugin-jsonv")` now returns the plugin object, so the plugin loads from a `.prettierrc.cjs` or `prettier.config.cjs` as well as from an ES module config. The build moves to tsup, `dist/index.cjs` is a thin wrapper around the ES module rather than a second bundle, and a `prettier-plugin-jsonv-dev` export condition loads `src/` in a checkout. The formatting code is unchanged ([#84](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/84), [#82](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/issues/82)).
-- **Node.js 22.22.0 or later is required** — `engines.node` rises from `>=18.0.0`, so upgrade Node.js before upgrading the plugin. Dev-only dependency updates and `katex`/`minimatch` overrides round out the release ([#85](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/85)).
-- [View full v1.2.0 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.0.md)
+- **`engines.node` back to `>=18.0.0`** — v1.2.0 declared `>=22.22.0`, the build and test toolchain floor, not something the plugin needs to run. `engines.node` is `>=18.0.0` again and the 22.22.0 development floor moves to `devEngines`, so older Node.js installs no longer get an `EBADENGINE` warning. A CommonJS config still needs Node.js ^20.19.0 or >=22.13.0 for `require()`. Formatting is unchanged ([#88](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/88)).
+- [View full v1.2.1 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.1.md)
 
 ### Recent Releases
 
+- **v1.2.0** (November 2026) — CommonJS entry, tsup build and a `prettier-plugin-jsonv-dev` export condition; `engines.node` raised to `>=22.22.0`; formatting unchanged (#84, #85) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.0.md))
 - **v1.1.4** (October 2026) — dev tooling on `@cldmv/fix-headers` 2.2.0 and `@cldmv/configs` 1.2.4; no file was restamped and no runtime change (#51, #54) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.4.md))
 - **v1.1.3** (October 2026) — the CI `✅ Required PR Check` mirror job runs on every path instead of being skipped on in-repo PRs (#49) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.3.md))
 - **v1.1.2** (October 2026) — dev-dependency bumps, including `@cldmv/vitest-runner` 1.5.1 and `@cldmv/jsonv` 1.1.1 in development (#46, #47) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.2.md))
-- **v1.1.1** (October 2026) — uniform file headers from the shared CLDMV fix-headers config, and a skipped PR run no longer satisfies Required PR Check (#44, #45) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.1.md))
 
 📚 **For complete version history, see [docs/changelog/](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/tree/master/docs/changelog/) and the [GitHub Releases](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/releases).**
 
@@ -39,7 +38,9 @@ npm install --save-dev @cldmv/prettier-plugin-jsonv prettier @cldmv/jsonv
 
 ## Usage
 
-The plugin needs Node.js `>=22.22.0` and Prettier 3. It ships an ES module entry and a CommonJS entry, so it loads from either kind of Prettier config.
+The plugin needs Node.js 18.0.0 or later and Prettier 3. It ships an ES module entry and a CommonJS entry, so it loads from either kind of Prettier config; `require()` needs Node.js ^20.19.0 or >=22.13.0.
+
+Developing this package needs Node.js 22.22.0 or later (`devEngines`).
 
 ### Using `.prettierrc.mjs` or `prettier.config.mjs`:
 
