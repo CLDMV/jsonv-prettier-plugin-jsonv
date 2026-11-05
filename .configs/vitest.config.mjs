@@ -13,7 +13,8 @@
  *
  */
 
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
+import { devCondition } from "@cldmv/configs/vitest.config.mjs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -21,33 +22,26 @@ import path from "node:path";
 // matter what cwd vitest is invoked from.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export default defineConfig({
-	root,
-	resolve: {
-		// Replaces the defaults, so keep the usual ones alongside the package's own
-		// condition (which routes the "." export to src/).
-		conditions: ["prettier-plugin-jsonv-dev", "module", "browser", "development|production"]
-	},
-	ssr: {
-		// Vitest often goes through the SSR resolve pipeline even in node tests.
-		resolve: {
-			conditions: ["prettier-plugin-jsonv-dev", "node", "development|production"]
+// devCondition() puts the package's prettier-plugin-jsonv-dev condition (which routes the "."
+// export to src/) ahead of Vite's default conditions for the client and SSR resolvers, and on
+// the worker command line, so Node's own resolver (including require() of the package from
+// src/index.cjs tests) loads src/ too.
+export default mergeConfig(
+	devCondition({ root }),
+	defineConfig({
+		root,
+		test: {
+			include: ["tests/**/*.test.vitest.mjs"],
+			exclude: ["node_modules"],
+			environment: "node",
+			testTimeout: 30000,
+			reporters: ["dot"],
+			coverage: {
+				provider: "v8",
+				include: ["src/**"],
+				exclude: ["**/*.json", "tests/**"],
+				reporter: ["text", "html", "json-summary", "json"]
+			}
 		}
-	},
-	test: {
-		include: ["tests/**/*.test.vitest.mjs"],
-		exclude: ["node_modules"],
-		environment: "node",
-		testTimeout: 30000,
-		// Workers get the condition on their node CLI (execArgv), so Node's own resolver
-		// (including require() of the package from src/index.cjs tests) loads src/ too.
-		nodeOptions: ["--conditions=prettier-plugin-jsonv-dev"],
-		reporters: ["dot"],
-		coverage: {
-			provider: "v8",
-			include: ["src/**"],
-			exclude: ["**/*.json", "tests/**"],
-			reporter: ["text", "html", "json-summary", "json"]
-		}
-	}
-});
+	})
+);
