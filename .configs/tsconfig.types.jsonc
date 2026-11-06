@@ -17,7 +17,7 @@
 	"compilerOptions": {
 		"allowJs": true,
 		// Type-check the JSDoc, not just emit declarations from it: a type error
-		// fails `build:types` (and so `build`, `test:types` and `build:ci`).
+		// fails `types:build` (and so `build`, `test:types` and `build:ci`).
 		"checkJs": true,
 		"strict": true,
 		"declaration": true,

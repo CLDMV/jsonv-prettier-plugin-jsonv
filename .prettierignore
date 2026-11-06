@@ -8,7 +8,7 @@ trash/
 package-lock.json
 # minified / compact generated files of any extension (*.min.js/.css/.json/.map…)
 *.min.*
-# tsc-generated declarations (npm run build:types) — regenerated, not hand-edited
+# tsc-generated declarations (npm run types:build) — regenerated, not hand-edited
 types/
 
 # YAML — CI workflows are deliberately 4-space indented; prettier (tabWidth 2,
