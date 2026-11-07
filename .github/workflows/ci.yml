@@ -139,7 +139,7 @@ on:
                 description: "Command to run type checking"
                 type: string
                 required: false
-                default: "npm run test:types"
+                default: "npm run types:check"
             skip_type_check:
                 description: "Skip the type-check step in the coverage-badge job"
                 type: boolean
@@ -272,12 +272,12 @@ jobs:
 
             # ── Type check (runs inside the coverage-badge job) ────────────────────
             # This package is JSDoc-typed JS (`src/**/*.mjs`), not `.ts` source.
-            # `npm run test:types` rebuilds the declarations with
+            # `npm run types:check` type-checks the source with
             # `.configs/tsconfig.types.jsonc` (`checkJs` + `strict`, so a JSDoc type
-            # error fails the build), then compiles `tests/types/consumer.test-d.mts`
-            # against the generated `types/src/index.d.mts` the way a consumer would
-            # (typed plugin, typed plugin options, `@ts-expect-error` checks).
-            type_check_command: ${{ github.event.inputs.type_check_command || 'npm run test:types' }}
+            # error fails the build), without emitting. `test:types` (part of `build:ci`)
+            # then compiles `tests/types/consumer.test-d.mts` against the generated
+            # `types/src/index.d.mts` the way a consumer would.
+            type_check_command: ${{ github.event.inputs.type_check_command || 'npm run types:check' }}
             skip_type_check: false
 
             # ── PR coverage badge ─────────────────────────────────────────────────
