@@ -7,7 +7,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-10-02T12:20:27-07:00 (1790968827)
+ *	@Last modified time: 2026-11-07T22:14:11-08:00 (1794118451)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  *
@@ -27,7 +27,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import prettier from "prettier";
-import plugin from "../src/index.mjs";
+import plugin from "@cldmv/prettier-plugin-jsonv";
 import { format as formatJsonv, evaluate } from "./helpers/jsonv.mjs";
 
 const fixturesDir = resolve(fileURLToPath(new URL(".", import.meta.url)), "fixtures");

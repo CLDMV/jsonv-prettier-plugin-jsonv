@@ -106,7 +106,7 @@ The published package contains only the built `dist/` (`dist/index.mjs`, and `di
 | `node --conditions=prettier-plugin-jsonv-dev app.mjs`     | `src/index.mjs`                              |
 | `require()` with `--conditions=prettier-plugin-jsonv-dev` | `src/index.cjs`, which loads `src/index.mjs` |
 
-Set it once per shell with `export NODE_OPTIONS=--conditions=prettier-plugin-jsonv-dev`. `npm test` runs the Vitest suite against `src/` with the condition, then builds and checks the CommonJS entry in `dist/` with `node --test`.
+Set it once per shell with `export NODE_OPTIONS=--conditions=prettier-plugin-jsonv-dev`. `npm test` runs the Vitest suite against `src/` with the condition, then builds and checks the CommonJS entry in `dist/` with `node --test`. `npm run test:dist` builds and runs the Vitest suite against `dist/` instead.
 
 ## License
 
