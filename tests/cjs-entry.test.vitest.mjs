@@ -25,6 +25,7 @@ import prettier from "prettier";
 import plugin, { plugin as namedPlugin } from "../src/index.mjs";
 
 const require = createRequire(import.meta.url);
+// The test below needs the dev condition, which `npm run test:dist` (`--mode=dist`) leaves off, so it is skipped there.
 const entry = require.resolve("../src/index.cjs");
 const requireModule = Object.getOwnPropertyDescriptor(process.features, "require_module");
 
@@ -47,9 +48,13 @@ describe("src/index.cjs", () => {
 		expect(Object.keys(cjs.parsers)).toEqual(Object.keys(plugin.parsers));
 		expect(Object.keys(cjs.printers.jsonv).sort()).toEqual(Object.keys(plugin.printers.jsonv).sort());
 		expect(cjs.parsers.jsonv.astFormat).toBe("jsonv");
+		// The plugin object itself, not the module object: no `default` / `plugin` keys hang off it.
+		expect(cjs.default).toBeUndefined();
+		expect(cjs.plugin).toBeUndefined();
+		expect(cjs.__esModule).toBeUndefined();
 	});
 
-	it("is what require() of the package name returns under the dev condition", () => {
+	it.skipIf(import.meta.env.MODE === "dist")("is what require() of the package name returns under the dev condition", () => {
 		expect(require.resolve("@cldmv/prettier-plugin-jsonv")).toBe(entry);
 		expect(require("@cldmv/prettier-plugin-jsonv")).toBe(require("../src/index.cjs"));
 	});

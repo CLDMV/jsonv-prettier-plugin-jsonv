@@ -14,20 +14,14 @@
  */
 
 /**
- * CommonJS entry point: a thin, synchronous wrapper around the ESM plugin.
+ * CommonJS entry point: the generic CLDMV shim over the ESM build.
  *
- * Node's `require()` loads an ES module synchronously as long as its module graph
- * has no top-level await, so this file re-exports the plugin from ./index.mjs
- * instead of tsup bundling a second copy for CommonJS. It returns the default
- * export, the plugin object (`languages`, `parsers`, `printers`, `options`), which
- * is what Prettier expects from a CommonJS plugin.
+ * The package exports one value, the plugin object (`languages`, `parsers`, `printers`, `options`), as both
+ * `default` and `plugin`. The shim counts the two aliases once, so `require("@cldmv/prettier-plugin-jsonv")`
+ * returns the plugin object itself, which is what Prettier expects from a CommonJS plugin.
  *
- * Node.js versions without require(esm) would fail with a bare ERR_REQUIRE_ESM,
- * so the check below fails early with a message that says what to do instead.
- *
- * tsup.config.mjs copies this file verbatim to dist/index.cjs. Its
- * `require("./index.mjs")` resolves to the sibling src/index.mjs in a checkout
- * and to the bundle in dist/.
+ * tsup.config.mjs copies this file verbatim to dist/index.cjs. Its `require("./index.mjs")` resolves to the
+ * sibling src/index.mjs in a checkout and to the built ESM entry in dist/.
  *
  * @module @cldmv/prettier-plugin-jsonv
  */
@@ -41,4 +35,12 @@ if (!process.features?.require_module) {
 	throw error;
 }
 
-module.exports = require("./index.mjs").default;
+// Same exports as `import`. One distinct exported value (aliases of it count once) comes back as that value,
+// so require(x)(...) works; anything else comes back as the module object ({ default, ...named }).
+const esm = require("./index.mjs");
+const values = new Set(
+	Object.keys(esm)
+		.filter((key) => key !== "__esModule")
+		.map((key) => esm[key])
+);
+module.exports = values.size === 1 ? values.values().next().value : esm;

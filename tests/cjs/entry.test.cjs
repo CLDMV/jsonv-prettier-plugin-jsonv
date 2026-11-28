@@ -7,7 +7,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-11-01T12:09:04-08:00 (1793563744)
+ *	@Last modified time: 2026-11-07T20:57:42-08:00 (1794113862)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  *
@@ -17,7 +17,7 @@
  * @fileoverview Checks the built dist/ output: dist/index.cjs is the verbatim copy of
  * src/index.cjs, it exposes the same plugin as dist/index.mjs, and Prettier formats a
  * .jsonv file through a CommonJS config that require()s the plugin. Run after
- * `npm run build` (see `test:dist`).
+ * `npm run build` (see `test:cjs`).
  */
 "use strict";
 
@@ -45,6 +45,10 @@ test("the CJS entry exposes the same plugin as the ESM entry", async () => {
 	assert.equal(cjs, esm.default);
 	assert.equal(cjs, esm.plugin);
 	assert.deepEqual(Object.keys(cjs).sort(), ["languages", "options", "parsers", "printers"]);
+	// The plugin object itself, not the module object: no `default` / `plugin` keys hang off it.
+	assert.equal(cjs.default, undefined);
+	assert.equal(cjs.plugin, undefined);
+	assert.equal(cjs.__esModule, undefined);
 	assert.equal(cjs.languages, esm.default.languages);
 	assert.equal(cjs.parsers, esm.default.parsers);
 	assert.equal(cjs.printers, esm.default.printers);

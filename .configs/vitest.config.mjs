@@ -7,7 +7,7 @@
  *	@Email: <Shinrai@users.noreply.github.com>
  *	-----
  *	@Last modified by: Nate Corcoran <CLDMV> (Shinrai@users.noreply.github.com)
- *	@Last modified time: 2026-11-01T12:08:56-08:00 (1793563736)
+ *	@Last modified time: 2026-11-07T22:14:09-08:00 (1794118449)
  *	-----
  *	@Copyright: Copyright (c) 2013-2026 Catalyzed Motivation Inc. All rights reserved.
  *
@@ -26,22 +26,26 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // export to src/) ahead of Vite's default conditions for the client and SSR resolvers, and on
 // the worker command line, so Node's own resolver (including require() of the package from
 // src/index.cjs tests) loads src/ too.
-export default mergeConfig(
-	devCondition({ root }),
-	defineConfig({
-		root,
-		test: {
-			include: ["tests/**/*.test.vitest.mjs"],
-			exclude: ["node_modules"],
-			environment: "node",
-			testTimeout: 30000,
-			reporters: ["dot"],
-			coverage: {
-				provider: "v8",
-				include: ["src/**"],
-				exclude: ["**/*.json", "tests/**"],
-				reporter: ["text", "html", "json-summary", "json"]
+// `--mode=dist` (npm run test:dist) leaves the -dev condition off, so tests that import "@cldmv/prettier-plugin-jsonv" by name run
+// against the build in dist/ instead of src/.
+export default defineConfig(({ mode }) =>
+	mergeConfig(
+		mode === "dist" ? {} : devCondition({ root }),
+		defineConfig({
+			root,
+			test: {
+				include: ["tests/**/*.test.vitest.mjs"],
+				exclude: ["node_modules"],
+				environment: "node",
+				testTimeout: 30000,
+				reporters: ["dot"],
+				coverage: {
+					provider: "v8",
+					include: ["src/**"],
+					exclude: ["**/*.json", "tests/**"],
+					reporter: ["text", "html", "json-summary", "json"]
+				}
 			}
-		}
-	})
+		})
+	)
 );
