@@ -45,6 +45,10 @@ test("the CJS entry exposes the same plugin as the ESM entry", async () => {
 	assert.equal(cjs, esm.default);
 	assert.equal(cjs, esm.plugin);
 	assert.deepEqual(Object.keys(cjs).sort(), ["languages", "options", "parsers", "printers"]);
+	// The plugin object itself, not the module object: no `default` / `plugin` keys hang off it.
+	assert.equal(cjs.default, undefined);
+	assert.equal(cjs.plugin, undefined);
+	assert.equal(cjs.__esModule, undefined);
 	assert.equal(cjs.languages, esm.default.languages);
 	assert.equal(cjs.parsers, esm.default.parsers);
 	assert.equal(cjs.printers, esm.default.printers);
