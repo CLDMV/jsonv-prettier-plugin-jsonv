@@ -48,6 +48,10 @@ describe("src/index.cjs", () => {
 		expect(Object.keys(cjs.parsers)).toEqual(Object.keys(plugin.parsers));
 		expect(Object.keys(cjs.printers.jsonv).sort()).toEqual(Object.keys(plugin.printers.jsonv).sort());
 		expect(cjs.parsers.jsonv.astFormat).toBe("jsonv");
+		// The plugin object itself, not the module object: no `default` / `plugin` keys hang off it.
+		expect(cjs.default).toBeUndefined();
+		expect(cjs.plugin).toBeUndefined();
+		expect(cjs.__esModule).toBeUndefined();
 	});
 
 	it.skipIf(import.meta.env.MODE === "dist")("is what require() of the package name returns under the dev condition", () => {
