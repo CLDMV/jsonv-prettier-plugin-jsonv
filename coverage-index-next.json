@@ -1,0 +1,157 @@
+{
+	"version": 1,
+	"commit": "b20eddf85b53a29b683cba835a29b5ec1c004bb4",
+	"files": {
+		"src/index.cjs": {
+			"(anonymous_0)": [
+				"tests/cjs-entry.test.vitest.mjs"
+			],
+			"(anonymous_1)": [
+				"tests/cjs-entry.test.vitest.mjs"
+			]
+		},
+		"src/index.mjs": {
+			"locStart": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"locEnd": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"printLiteralKey": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"findTemplateTextEnd": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"findInterpolationEnd": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"printDanglingComments": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"(anonymous_6)": [
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"(anonymous_7)": [
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"printContainer": [
+				"tests/cjs-entry.test.vitest.mjs",
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"(anonymous_9)": [
+				"tests/cjs-entry.test.vitest.mjs",
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"(anonymous_10)": [
+				"tests/cjs-entry.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"(anonymous_11)": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"printTemplateLiteral": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"(anonymous_13)": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"(anonymous_14)": [
+				"tests/cjs-entry.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs"
+			],
+			"printNode": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"handleLineComment": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"handleCommentAfterComma": [
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"handleEndOfLineComment": [
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"handleRemainingComment": [
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"printComment": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"parse": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"getVisitorKeys": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"canAttachComment": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			],
+			"isBlockComment": [
+				"tests/format.test.vitest.mjs",
+				"tests/lossless.test.vitest.mjs",
+				"tests/round-trip.test.vitest.mjs",
+				"tests/trailing-comma.test.vitest.mjs"
+			]
+		}
+	}
+}
