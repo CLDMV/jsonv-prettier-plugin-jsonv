@@ -8,17 +8,17 @@ A Prettier plugin for formatting [JSONV](https://github.com/CLDMV/jsonv) files.
 
 ## ✨ What's New
 
-### Latest: v1.2.3 (November 2026)
+### Latest: v1.2.4 (November 2026)
 
-- **Packaging and tooling release, no formatting changes** — the CommonJS entry is the generic CLDMV shim and `require("@cldmv/prettier-plugin-jsonv")` returns the plugin object as before ([#107](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/107)); the suite also runs against the built `dist/` ([#95](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/95)); CI cancels superseded runs; dev toolchain on `@cldmv/vitest-runner` 1.11.3.
-- [View full v1.2.3 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.3.md)
+- **CI configuration only, no package changes** — `dependabot.yml` takes the CLDMV/.github v4.47.0 groups, so the CLDMV dev tools arrive in one Dependabot PR ([#111](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/111)). The published package is the same as v1.2.3.
+- [View full v1.2.4 Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.4.md)
 
 ### Recent Releases
 
+- **v1.2.3** (November 2026) — the CommonJS entry is the generic CLDMV shim, with `require()` unchanged; the suite also runs against `dist/`; CI cancels superseded runs; dev toolchain on `@cldmv/vitest-runner` 1.11.3 ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.3.md))
 - **v1.2.2** (November 2026) — tooling release: tests run against `src/` through the `prettier-plugin-jsonv-dev` condition via `devCondition()`, and the type scripts are split into `types:check` and `types:build`; formatting unchanged ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.2.md))
 - **v1.2.1** (November 2026) — `engines.node` back to `>=18.0.0`; the 22.22.0 development floor moves to `devEngines` ([#88](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/pull/88)) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.1.md))
 - **v1.2.0** (November 2026) — CommonJS entry, tsup build and a `prettier-plugin-jsonv-dev` export condition; `engines.node` raised to `>=22.22.0`; formatting unchanged (#84, #85) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.2.0.md))
-- **v1.1.4** (October 2026) — dev tooling on `@cldmv/fix-headers` 2.2.0 and `@cldmv/configs` 1.2.4; no file was restamped and no runtime change (#51, #54) ([Changelog](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/blob/master/docs/changelog/v1/v1.1.4.md))
 
 📚 **For complete version history, see [docs/changelog/](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/tree/master/docs/changelog/) and the [GitHub Releases](https://github.com/CLDMV/jsonv-prettier-plugin-jsonv/releases).**
 
